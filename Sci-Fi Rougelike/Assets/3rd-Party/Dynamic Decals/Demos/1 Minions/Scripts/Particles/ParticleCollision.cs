@@ -1,5 +1,8 @@
-﻿using UnityEngine;
-using System.Collections;
+﻿#region
+
+using UnityEngine;
+
+#endregion
 
 namespace LlockhamIndustries.Misc
 {
@@ -7,9 +10,9 @@ namespace LlockhamIndustries.Misc
     {
         public ParticleSystem partSystem;
 
-        void OnCollisionEnter(Collision collision)
+        private void OnCollisionEnter(Collision collision)
         {
-            GameObject ps = ((ParticleSystem)Instantiate(partSystem, transform.position, partSystem.transform.rotation, transform.parent)).gameObject;
+            var ps = Instantiate(partSystem, transform.position, partSystem.transform.rotation, transform.parent).gameObject;
             ps.name = "Splash Particles";
         }
     }

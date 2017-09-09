@@ -1,5 +1,8 @@
-﻿using UnityEngine;
-using System.Collections;
+﻿#region
+
+using UnityEngine;
+
+#endregion
 
 namespace LlockhamIndustries.Decals
 {
@@ -8,7 +11,6 @@ namespace LlockhamIndustries.Decals
     */
     public class RayPrinter : Printer
     {
-
         /**
         * The layers the raycast collide with, this should be set in editor or once at initialization.
         */
@@ -28,9 +30,7 @@ namespace LlockhamIndustries.Decals
 
             RaycastHit hit;
             if (Physics.Raycast(Ray, out hit, RayLength, layers.value))
-            {
                 Print(hit.point, Quaternion.LookRotation(-hit.normal, DecalUp), hit.transform, hit.collider.gameObject.layer);
-            }
         }
     }
 }

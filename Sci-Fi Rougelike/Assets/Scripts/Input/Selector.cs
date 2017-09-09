@@ -1,12 +1,12 @@
-﻿//Copyright © Darwin Willers 2017
+﻿#region
 
 using UnityEngine;
 
+#endregion
+
 public static class Selector
 {
-
     private const float MaxRange = 1000f;
-
 
 
     public static bool SelectTileByRay(Vector3 pos, out GroundTile tile)

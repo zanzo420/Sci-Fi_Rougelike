@@ -1,27 +1,32 @@
-﻿using System;
+﻿#region
+
 using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
+
+#endregion
 
 namespace LlockhamIndustries.Misc
 {
     public class Press : Trap
     {
-        [Header("Components")]
-        public Rigidbody press;
-        
-        [Header("State - Triggered")]
-        public Vector3 triggeredPosition = new Vector3(-1.25f, 0, 0);
-        public float triggeredAcceleration = 10;
-        public float triggeredDuration = 2;
-        
-        [Header("State - Rearmed")]
-        public Vector3 rearmedPosition = new Vector3(0, 0, 0);
-        public float rearmedAcceleration = 0.1f;
+        private float acceleration;
 
         //Calculation
         private Vector3 goalPosition;
-        private float acceleration;
+
+        [Header("Components")]
+        public Rigidbody press;
+
+        public float rearmedAcceleration = 0.1f;
+
+        [Header("State - Rearmed")]
+        public Vector3 rearmedPosition = new Vector3(0, 0, 0);
+
+        public float triggeredAcceleration = 10;
+        public float triggeredDuration = 2;
+
+        [Header("State - Triggered")]
+        public Vector3 triggeredPosition = new Vector3(-1.25f, 0, 0);
 
         //Generic methods
         private void Start()
@@ -29,15 +34,16 @@ namespace LlockhamIndustries.Misc
             goalPosition = rearmedPosition;
             acceleration = rearmedAcceleration;
         }
+
         private void FixedUpdate()
         {
             if (Vector3.Distance(press.transform.localPosition, goalPosition) > 0.01f || press.velocity.magnitude > 0.001f)
             {
                 //Calculate velocity
-                Vector3 velocity = (goalPosition - press.transform.localPosition) / Time.fixedDeltaTime;
+                var velocity = (goalPosition - press.transform.localPosition) / Time.fixedDeltaTime;
 
                 //Convert acceleration from m/s^2 to m/loop^2
-                float loopAcceleration = acceleration / Time.fixedDeltaTime;
+                var loopAcceleration = acceleration / Time.fixedDeltaTime;
 
                 //Convert to world space
                 velocity = transform.TransformDirection(velocity);
@@ -68,6 +74,7 @@ namespace LlockhamIndustries.Misc
             //Trigger complete
             TriggerComplete();
         }
+
         protected override IEnumerator OnRearm()
         {
             //Set goal position and velocity
@@ -75,9 +82,7 @@ namespace LlockhamIndustries.Misc
             acceleration = rearmedAcceleration;
 
             while (Vector3.Distance(press.transform.localPosition, goalPosition) > 0.01f || press.velocity.magnitude > 0.001f)
-            {
                 yield return new WaitForFixedUpdate();
-            }
 
             //Rearm complete
             RearmComplete();

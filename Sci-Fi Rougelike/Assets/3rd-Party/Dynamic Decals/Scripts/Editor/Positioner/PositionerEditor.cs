@@ -1,16 +1,18 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
+﻿#region
+
 using UnityEditor;
+using UnityEngine;
+
+#endregion
 
 namespace LlockhamIndustries.Decals
 {
     [CustomEditor(typeof(Positioner))]
     public abstract class PositionerEditor : Editor
     {
-        SerializedProperty projection;
-        SerializedProperty layers;
-        SerializedProperty alwaysVisible;
+        private SerializedProperty alwaysVisible;
+        private SerializedProperty layers;
+        private SerializedProperty projection;
 
         public virtual void OnEnable()
         {
@@ -18,6 +20,7 @@ namespace LlockhamIndustries.Decals
             layers = serializedObject.FindProperty("layers");
             alwaysVisible = serializedObject.FindProperty("alwaysVisible");
         }
+
         public override void OnInspectorGUI()
         {
             //Update object
@@ -38,6 +41,7 @@ namespace LlockhamIndustries.Decals
             EditorGUI.indentLevel--;
             EditorGUILayout.Space();
         }
+
         protected void CastGUI()
         {
             EditorGUILayout.LabelField(new GUIContent("Cast", "Details about how we cast the decal into the scene"));

@@ -1,28 +1,33 @@
-﻿using UnityEngine;
-using System.Collections;
+﻿#region
+
+using UnityEngine;
+
+#endregion
 
 namespace LlockhamIndustries.Misc
 {
     //Camera Controller
     public class TargetedCameraController : GenericCameraController
     {
-        [Header("Target")]
-        public Transform target;
-        public float trackingSpeed = 0.1f;
+        private Vector3 basePos;
+        private Vector3 cameraVelocity;
+        public AnimationCurve lookCurve;
 
         [Header("Look")]
         public float lookSensitivity = 0.3f;
+
         public float lookSpeed = 0.2f;
-        public AnimationCurve lookCurve;
+
+        private Vector3 offset;
+        private Vector3 offsetVelocity;
 
         //Backing fields
         private Vector2 screenOffset;
 
-        private Vector3 basePos;
-        private Vector3 cameraVelocity;
+        [Header("Target")]
+        public Transform target;
 
-        private Vector3 offset;
-        private Vector3 offsetVelocity;
+        public float trackingSpeed = 0.1f;
 
         //Generic methods
         private void Update()
@@ -30,6 +35,7 @@ namespace LlockhamIndustries.Misc
             OffsetInput();
             RotationZoomInput();
         }
+
         private void LateUpdate()
         {
             ApplyPosition();
@@ -39,10 +45,11 @@ namespace LlockhamIndustries.Misc
         //Targeted offset
         private void OffsetInput()
         {
-            Vector2 screenCentre = new Vector2(Screen.width / 2, Screen.height / 2);
+            var screenCentre = new Vector2(Screen.width / 2, Screen.height / 2);
             screenOffset.x = (Input.mousePosition.x - screenCentre.x) / screenCentre.x;
             screenOffset.y = (Input.mousePosition.y - screenCentre.y) / screenCentre.y;
         }
+
         private void ApplyPosition()
         {
             if (target != null)
@@ -54,13 +61,13 @@ namespace LlockhamIndustries.Misc
                 screenOffset = screenOffset.normalized * lookCurve.Evaluate(screenOffset.magnitude) * lookSensitivity;
 
                 //Convert screen offset into a position offset
-                Vector3 positionOffset = (Forward * screenOffset.y) + (Right * screenOffset.x);
+                var positionOffset = Forward * screenOffset.y + Right * screenOffset.x;
 
                 //Smooth offset
                 offset = Vector3.SmoothDamp(offset, positionOffset, ref offsetVelocity, lookSpeed);
 
                 //Final Position
-                transform.position = basePos + (offset * zoom);
+                transform.position = basePos + offset * zoom;
             }
         }
     }

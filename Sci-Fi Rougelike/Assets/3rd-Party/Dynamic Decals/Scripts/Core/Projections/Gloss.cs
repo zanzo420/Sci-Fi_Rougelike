@@ -1,15 +1,31 @@
-﻿using UnityEngine;
-using System.Collections;
+﻿#region
+
 using System;
+using UnityEngine;
+
+#endregion
 
 namespace LlockhamIndustries.Decals
 {
     /**
     * Deferred Only gloss projection. Only affects the gloss channel of the deferred buffers. Useful for making things wetter or rougher.
     */
-    [System.Serializable]
+    [Serializable]
     public class Gloss : Deferred
     {
+        //Materials
+        protected Material[] deferredMaterials;
+
+        /**
+        * The primary color details of your projection.
+        * The alpha channel of these properties is used to determine the projections transparency.
+        */
+        public GlossPropertyGroup gloss;
+
+        //Static Properties
+        [SerializeField]
+        public GlossType glossType;
+
         /**
         * Defines how the gloss modifcation affects the surface.
         * Shine will have the decal shine the surface it's applied too. Great for making surfaces appear wet.
@@ -33,19 +49,19 @@ namespace LlockhamIndustries.Decals
         {
             get { return DeferredMaterials; }
         }
+
         public override Material[] DeferredTransparent
         {
             get { return DeferredMaterials; }
         }
+
         private Material[] DeferredMaterials
         {
             get
             {
                 //Initialize if required
                 if (deferredMaterials == null || deferredMaterials.Length != 1)
-                {
                     deferredMaterials = new Material[1];
-                }
 
                 //Find relevant shader
                 Shader shader = null;
@@ -60,11 +76,8 @@ namespace LlockhamIndustries.Decals
                 }
 
                 if (deferredMaterials[0] != null && deferredMaterials[0].shader != shader)
-                {
-                    //Destroy old material
                     if (Application.isPlaying) Destroy(deferredMaterials[0]);
                     else DestroyImmediate(deferredMaterials[0], true);
-                }
 
                 if (deferredMaterials[0] == null)
                 {
@@ -87,6 +100,7 @@ namespace LlockhamIndustries.Decals
         {
             UpdateMaterialArray(deferredMaterials);
         }
+
         protected override void Apply(Material Material)
         {
             //Apply base
@@ -99,20 +113,8 @@ namespace LlockhamIndustries.Decals
         protected override void DestroyMaterials()
         {
             if (deferredMaterials != null)
-            {
                 DestroyMaterialArray(deferredMaterials);
-            }
         }
-
-        //Static Properties
-        [SerializeField]
-        public GlossType glossType;
-
-        /**
-        * The primary color details of your projection.
-        * The alpha channel of these properties is used to determine the projections transparency.
-        */
-        public GlossPropertyGroup gloss;
 
         protected override void OnEnable()
         {
@@ -121,6 +123,7 @@ namespace LlockhamIndustries.Decals
 
             base.OnEnable();
         }
+
         protected override void GenerateIDs()
         {
             base.GenerateIDs();
@@ -137,10 +140,7 @@ namespace LlockhamIndustries.Decals
             //Normal Strength
             properties[0] = new ProjectionProperty("Glossiness", gloss._Glossiness, gloss.Glossiness);
         }
-
-        //Materials
-        protected Material[] deferredMaterials;
     }
 
-    public enum GlossType { Shine, Dull };
+    public enum GlossType { Shine, Dull }
 }

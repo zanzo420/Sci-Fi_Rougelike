@@ -1,14 +1,20 @@
-﻿using System.Collections;
-using System.Collections.Generic;
+﻿#region
+
+using System.Collections;
+using LlockhamIndustries.Decals;
 using UnityEngine;
 
-using LlockhamIndustries.Decals;
+#endregion
 
 namespace LlockhamIndustries.Misc
 {
     [RequireComponent(typeof(RayPositioner))]
     public class Selectable : MonoBehaviour
     {
+        //Backing fields
+        private ProjectionRenderer decal;
+
+        private bool selected;
         public Color selectedColor = Color.white;
         public Color unselectedColor = Color.gray;
 
@@ -38,6 +44,7 @@ namespace LlockhamIndustries.Misc
             }
             get { return selected; }
         }
+
         private ProjectionRenderer Decal
         {
             set
@@ -62,10 +69,6 @@ namespace LlockhamIndustries.Misc
             }
         }
 
-        //Backing fields
-        private ProjectionRenderer decal;
-        private bool selected;
-
         //Generic methods
         private void OnEnable()
         {
@@ -75,6 +78,7 @@ namespace LlockhamIndustries.Misc
             //Grab projection
             StartCoroutine(GrabProjection());
         }
+
         private void OnDisable()
         {
             StopAllCoroutines();
@@ -84,7 +88,7 @@ namespace LlockhamIndustries.Misc
         private IEnumerator GrabProjection()
         {
             //Grab ray positioner
-            RayPositioner positioner = GetComponent<RayPositioner>();
+            var positioner = GetComponent<RayPositioner>();
 
             //Grab projection
             while (decal == null)
@@ -102,6 +106,7 @@ namespace LlockhamIndustries.Misc
             //Register
             Selector.Register(this);
         }
+
         private void Deregister()
         {
             //Selector check

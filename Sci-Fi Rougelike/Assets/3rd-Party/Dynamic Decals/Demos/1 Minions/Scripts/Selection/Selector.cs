@@ -1,29 +1,45 @@
-﻿using System.Collections;
+﻿#region
+
 using System.Collections.Generic;
+using LlockhamIndustries.Decals;
 using UnityEngine;
 
-using LlockhamIndustries.Decals;
+#endregion
 
 namespace LlockhamIndustries.Misc
 {
     [RequireComponent(typeof(GenericCameraController))]
     public class Selector : MonoBehaviour
     {
+        private static Selector selector;
+
+        private List<Selectable> available;
+        public ProjectionRenderer border;
+        public LayerMask boxSelect;
+
+        private BoxSelection boxSelection;
+
+        //Backing fields
+        private GenericCameraController controller;
+
         [Header("Projections")]
         public ProjectionRenderer innards;
-        public ProjectionRenderer border;
-        public float width = 0.05f;
 
         [Header("Layers")]
         public LayerMask select;
-        public LayerMask boxSelect;
+
+        private List<Selectable> softSelection;
+        public float width = 0.05f;
 
         //Singleton
         public static bool Initialized
         {
-            get { return (selector != null); }
+            get { return selector != null; }
         }
-        private static Selector selector;
+
+        //Selection
+        public List<Selectable> Selection { get; private set; }
+
         private void Awake()
         {
             if (selector == null) selector = this;
@@ -39,44 +55,29 @@ namespace LlockhamIndustries.Misc
             //Register new selectable
             if (!selector.available.Contains(Selectable)) selector.available.Add(Selectable);
         }
+
         public static void Deregister(Selectable Selectable)
         {
             //Deregister selectable
             if (selector.available != null) selector.available.Remove(Selectable);
-            if (selector.selection != null) selector.selection.Remove(Selectable);
+            if (selector.Selection != null) selector.Selection.Remove(Selectable);
             if (selector.softSelection != null) selector.softSelection.Remove(Selectable);
         }
-
-        //Selection
-        public List<Selectable> Selection
-        {
-            get { return selection; }
-        }
-
-        //Backing fields
-        private GenericCameraController controller;
-
-        private List<Selectable> available;
-        private List<Selectable> selection;
-        private List<Selectable> softSelection;
-
-        private BoxSelection boxSelection;
 
         //Generic methods
         private void Start()
         {
             controller = GetComponent<FreeCameraController>();
         }
+
         private void Update()
         {
             //Additive
-            bool additive = Input.GetKey(KeyCode.LeftShift);
+            var additive = Input.GetKey(KeyCode.LeftShift);
 
             //Perform selections
             if (!SelectionInput(additive))
-            {
                 BoxSelectionInput(additive);
-            }
         }
 
         //Selection input
@@ -85,13 +86,13 @@ namespace LlockhamIndustries.Misc
             if (controller.Camera != null && Input.GetMouseButtonDown(0))
             {
                 //Set up ray
-                Ray ray = controller.Camera.ScreenPointToRay(Input.mousePosition);
+                var ray = controller.Camera.ScreenPointToRay(Input.mousePosition);
                 RaycastHit hit;
 
                 //Cast for selection
                 if (Physics.Raycast(ray, out hit, Mathf.Infinity, select.value))
                 {
-                    Selectable selectable = hit.collider.gameObject.GetComponent<Selectable>();
+                    var selectable = hit.collider.gameObject.GetComponent<Selectable>();
                     if (selectable != null)
                     {
                         Select(selectable, Additive);
@@ -101,6 +102,7 @@ namespace LlockhamIndustries.Misc
             }
             return false;
         }
+
         private void BoxSelectionInput(bool Additive)
         {
             if (controller.Camera != null)
@@ -110,10 +112,7 @@ namespace LlockhamIndustries.Misc
                 {
                     RaycastHit hit;
                     if (CursorCast(out hit, boxSelect))
-                    {
-                        //Create a new box selection
                         boxSelection = new BoxSelection(hit.point, hit.point, controller.FlattenedRotation, innards, border, width);
-                    }
                 }
 
                 //Update drag
@@ -146,29 +145,28 @@ namespace LlockhamIndustries.Misc
         //Selection
         public void ClearSelection()
         {
-            if (selection != null)
+            if (Selection != null)
             {
                 //Tell selectables they're no longer selected
-                foreach (Selectable selectable in selection)
-                {
+                foreach (var selectable in Selection)
                     selectable.Selected = false;
-                }
 
                 //Clear selection
-                selection.Clear();
+                Selection.Clear();
             }
         }
+
         public void Select(Selectable Selectable, bool Additive)
         {
             //Initialize
-            if (selection == null) selection = new List<Selectable>();
+            if (Selection == null) Selection = new List<Selectable>();
             else if (!Additive) ClearSelection();
 
             //Tell selectable it's selected
             Selectable.Selected = true;
 
             //Add to selection
-            selection.Add(Selectable);
+            Selection.Add(Selectable);
         }
 
         public void ClearSoftSelection()
@@ -176,15 +174,14 @@ namespace LlockhamIndustries.Misc
             if (softSelection != null)
             {
                 //Tell selectables they're no longer selected
-                foreach (Selectable selectable in softSelection)
-                {
+                foreach (var selectable in softSelection)
                     selectable.Selected = false;
-                }
 
                 //Clear soft selection
                 softSelection.Clear();
             }
         }
+
         public void UpdateSoftSelection()
         {
             if (boxSelection != null && available != null)
@@ -196,8 +193,7 @@ namespace LlockhamIndustries.Misc
                 if (softSelection == null) softSelection = new List<Selectable>();
 
                 //Check all available selectables
-                foreach (Selectable selectable in available)
-                {
+                foreach (var selectable in available)
                     if (boxSelection.Contains(selectable.transform.position))
                     {
                         //Tell selectable it's selected
@@ -206,26 +202,26 @@ namespace LlockhamIndustries.Misc
                         //Add to selection
                         softSelection.Add(selectable);
                     }
-                }
             }
             
         }
+
         public void ApplySoftSelection(bool Additive)
         {
             if (softSelection != null)
             {
                 //Initialize
-                if (selection == null) selection = new List<Selectable>();
+                if (Selection == null) Selection = new List<Selectable>();
                 else if (!Additive) ClearSelection();
 
                 //Add soft selection to selection
-                foreach (Selectable selectable in softSelection)
+                foreach (var selectable in softSelection)
                 {
                     //Tell selectable it's selected
                     selectable.Selected = true;
 
                     //Add to selection
-                    selection.Add(selectable);
+                    Selection.Add(selectable);
                 }
 
                 //Clear soft selection
@@ -237,45 +233,30 @@ namespace LlockhamIndustries.Misc
         private bool CursorCast(out RaycastHit hit, LayerMask Layers)
         {
             //Set up ray
-            Ray ray = controller.Camera.ScreenPointToRay(Input.mousePosition);
+            var ray = controller.Camera.ScreenPointToRay(Input.mousePosition);
 
             //Cast for selection
-            return (Physics.Raycast(ray, out hit, Mathf.Infinity, Layers.value));
+            return Physics.Raycast(ray, out hit, Mathf.Infinity, Layers.value);
         }
     }
 
     public class BoxSelection
     {
+        private readonly ProjectionRenderer bottom;
+        private readonly ProjectionRenderer core;
+        private Vector3 end;
+        private readonly ProjectionRenderer left;
+        private readonly ProjectionRenderer right;
+
+        private readonly Transform selection;
+
         //Core
         private Vector3 start;
-        private Vector3 end;
-        private Transform selection;
-        
-        //Properties
-        public float XMin
-        {
-            get { return Mathf.Min(start.x, end.x); }
-        }
-        public float XMax
-        {
-            get { return Mathf.Max(start.x, end.x); }
-        }
-        public float ZMin
-        {
-            get { return Mathf.Min(start.z, end.z); }
-        }
-        public float ZMax
-        {
-            get { return Mathf.Max(start.z, end.z); }
-        }
+
+        private readonly ProjectionRenderer top;
 
         //Display
-        private float width;
-        private ProjectionRenderer core;
-        private ProjectionRenderer left;
-        private ProjectionRenderer right;
-        private ProjectionRenderer top;
-        private ProjectionRenderer bottom;
+        private readonly float width;
 
         public BoxSelection(Vector3 StartPosition, Vector3 EndPosition, Quaternion Orientation, ProjectionRenderer Innards, ProjectionRenderer Border, float Width)
         {
@@ -292,7 +273,7 @@ namespace LlockhamIndustries.Misc
             width = Width;
 
             //Request display projections
-            ProjectionPool pool = ProjectionPool.GetPool(0);
+            var pool = ProjectionPool.GetPool(0);
             core = pool.Request(Innards);
             left = pool.Request(Border);
             right = pool.Request(Border);
@@ -309,6 +290,28 @@ namespace LlockhamIndustries.Misc
             //Update displays
             UpdateDisplays();
         }
+
+        //Properties
+        public float XMin
+        {
+            get { return Mathf.Min(start.x, end.x); }
+        }
+
+        public float XMax
+        {
+            get { return Mathf.Max(start.x, end.x); }
+        }
+
+        public float ZMin
+        {
+            get { return Mathf.Min(start.z, end.z); }
+        }
+
+        public float ZMax
+        {
+            get { return Mathf.Max(start.z, end.z); }
+        }
+
         public void Destroy()
         {
             //Return projection renderers
@@ -319,7 +322,7 @@ namespace LlockhamIndustries.Misc
             bottom.Destroy();
 
             //Destroy selection object
-            GameObject.Destroy(selection.gameObject);
+            Object.Destroy(selection.gameObject);
         }
 
         public void Update(Vector3 Position)
@@ -330,13 +333,14 @@ namespace LlockhamIndustries.Misc
             //Update displays
             UpdateDisplays();
         }
+
         public void UpdateDisplays()
         {
             //Cache values
-            float xMin = XMin;
-            float xMax = XMax;
-            float zMin = ZMin;
-            float zMax = ZMax;
+            var xMin = XMin;
+            var xMax = XMax;
+            var zMin = ZMin;
+            var zMax = ZMax;
 
             //Update our displays
             UpdateDisplay(core.transform, xMin, xMax, zMin, zMax);
@@ -345,6 +349,7 @@ namespace LlockhamIndustries.Misc
             UpdateDisplay(top.transform, xMin, xMax, zMax - width, zMax);
             UpdateDisplay(bottom.transform, xMin, xMax, zMin, zMin + width);
         }
+
         public void UpdateDisplay(Transform Display, float XMin, float XMax, float ZMin, float ZMax)
         {
             //Rotation
@@ -359,9 +364,9 @@ namespace LlockhamIndustries.Misc
 
         public bool Contains(Vector3 Point)
         {
-            Vector3 localPoint = selection.InverseTransformPoint(Point);
+            var localPoint = selection.InverseTransformPoint(Point);
             if (localPoint.x > XMin && localPoint.x < XMax && localPoint.z > ZMin && localPoint.z < ZMax) return true;
-            else return false;
+            return false;
         }
     }
 }

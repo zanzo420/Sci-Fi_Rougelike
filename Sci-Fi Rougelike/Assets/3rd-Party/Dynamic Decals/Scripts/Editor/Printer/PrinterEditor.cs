@@ -1,26 +1,27 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
+﻿#region
+
 using UnityEditor;
+using UnityEngine;
+
+#endregion
 
 namespace LlockhamIndustries.Decals
 {
     [CustomEditor(typeof(Printer))]
     public class PrinterEditor : Editor
     {
-        protected SerializedProperty prints;
-        protected SerializedProperty printLayers;
-        protected SerializedProperty printTags;
-        protected SerializedProperty printMethod;
+        protected SerializedProperty destroyOnPrint;
+        protected SerializedProperty frequencyDistance;
+        protected SerializedProperty frequencyTime;
+        protected SerializedProperty overlaps;
+        protected SerializedProperty parent;
 
         protected SerializedProperty poolID;
-        protected SerializedProperty parent;
         protected SerializedProperty printBehaviours;
-        protected SerializedProperty overlaps;
-
-        protected SerializedProperty destroyOnPrint;
-        protected SerializedProperty frequencyTime;
-        protected SerializedProperty frequencyDistance;
+        protected SerializedProperty printLayers;
+        protected SerializedProperty printMethod;
+        protected SerializedProperty prints;
+        protected SerializedProperty printTags;
 
         public virtual void OnEnable()
         {
@@ -66,7 +67,7 @@ namespace LlockhamIndustries.Decals
             EditorGUILayout.LabelField(new GUIContent("Projections", "The possible Projections to print & the method used to select amongst them."), GUILayout.MaxWidth(120));
             GUILayout.FlexibleSpace();
             EditorGUI.BeginChangeCheck();
-            int printSize = EditorGUILayout.IntSlider(new GUIContent("", "The number of projections available to print"), prints.arraySize, 1, 10, GUILayout.MaxWidth(120));
+            var printSize = EditorGUILayout.IntSlider(new GUIContent("", "The number of projections available to print"), prints.arraySize, 1, 10, GUILayout.MaxWidth(120));
             if (EditorGUI.EndChangeCheck() || printLayers.arraySize != prints.arraySize)
             {
                 prints.arraySize = printSize;
@@ -85,8 +86,7 @@ namespace LlockhamIndustries.Decals
             }
 
             //Prints
-            for (int i = 0; i < prints.arraySize; i++)
-            {
+            for (var i = 0; i < prints.arraySize; i++)
                 if (prints.arraySize > 1 && printLayers.arraySize > 1 && printMethod.enumValueIndex == 2)
                 {
                     EditorGUILayout.BeginHorizontal();
@@ -99,28 +99,25 @@ namespace LlockhamIndustries.Decals
                     EditorGUILayout.BeginHorizontal();
                     EditorGUILayout.PropertyField(prints.GetArrayElementAtIndex(i), new GUIContent("", "Projection to print"));
                     if (i == 0)
-                    {
                         EditorGUILayout.LabelField(new GUIContent("Default", "Tag to print on"), GUILayout.Width(100));
-                    }
                     else
-                    {
                         printTags.GetArrayElementAtIndex(i).stringValue = EditorGUILayout.TagField(new GUIContent("", "Tag to print on"), printTags.GetArrayElementAtIndex(i).stringValue, GUILayout.Width(100));
-                    }
                     EditorGUILayout.EndHorizontal();
                 }
                 else
                 {
                     EditorGUILayout.PropertyField(prints.GetArrayElementAtIndex(i), new GUIContent("", "Projection to print"));
                 }
-            }
             EditorGUI.indentLevel--;
             EditorGUILayout.Space();
         }
+
         protected void BehaviourGUI()
         {
             EditorGUILayout.PropertyField(printBehaviours, new GUIContent("Print Behaviours", "Should the printed projection keep attached behaviours?"));
             EditorGUILayout.Space();
         }
+
         protected void PoolGUI()
         {
             EditorGUILayout.LabelField(new GUIContent("Pool", "The pool the printed projections belong to"));
@@ -129,6 +126,7 @@ namespace LlockhamIndustries.Decals
             EditorGUI.indentLevel--;
             EditorGUILayout.Space();
         }
+
         protected void ParentGUI()
         {
             EditorGUILayout.LabelField(new GUIContent("Parent", "The transform to attach the prints to"));
@@ -137,6 +135,7 @@ namespace LlockhamIndustries.Decals
             EditorGUI.indentLevel--;
             EditorGUILayout.Space();
         }
+
         protected void OverlapGUI()
         {
             //Header
@@ -150,11 +149,11 @@ namespace LlockhamIndustries.Decals
                 EditorGUI.indentLevel++;
                 EditorGUI.BeginChangeCheck();
 
-                for (int i = 0; i < overlaps.arraySize; i++)
+                for (var i = 0; i < overlaps.arraySize; i++)
                 {
                     //Grab intersection properties
-                    SerializedProperty intersectionID = overlaps.GetArrayElementAtIndex(i).FindPropertyRelative("poolId");
-                    SerializedProperty intersectionStrength = overlaps.GetArrayElementAtIndex(i).FindPropertyRelative("intersectionStrength");
+                    var intersectionID = overlaps.GetArrayElementAtIndex(i).FindPropertyRelative("poolId");
+                    var intersectionStrength = overlaps.GetArrayElementAtIndex(i).FindPropertyRelative("intersectionStrength");
 
                     //Draw in Horizontal
                     EditorGUILayout.BeginHorizontal();
@@ -172,6 +171,7 @@ namespace LlockhamIndustries.Decals
             }
             EditorGUILayout.Space();
         }
+
         protected void FrequencyGUI()
         {
             EditorGUILayout.PropertyField(destroyOnPrint, new GUIContent("Destroy On Print", "Destroy the attached GameObject on print?"));
@@ -190,18 +190,16 @@ namespace LlockhamIndustries.Decals
         private void PoolSelection(SerializedProperty ID, GUIContent Label, params GUILayoutOption[] Options)
         {
             EditorGUI.BeginChangeCheck();
-            GUIContent[] pools = new GUIContent[DynamicDecals.System.Settings.pools.Length];
-            int index = 0;
-            for (int i = 0; i < DynamicDecals.System.Settings.pools.Length; i++)
+            var pools = new GUIContent[DynamicDecals.System.Settings.pools.Length];
+            var index = 0;
+            for (var i = 0; i < DynamicDecals.System.Settings.pools.Length; i++)
             {
                 pools[i] = new GUIContent(DynamicDecals.System.Settings.pools[i].title);
                 if (ID.intValue == DynamicDecals.System.Settings.pools[i].id) index = i;
             }
             index = EditorGUILayout.Popup(Label, index, pools, Options);
             if (EditorGUI.EndChangeCheck() || ID.intValue != 0 && index == 0)
-            {
                 ID.intValue = DynamicDecals.System.Settings.pools[index].id;
-            }
         }
     }
 }

@@ -1,5 +1,8 @@
-﻿using UnityEngine;
-using System.Collections;
+﻿#region
+
+using UnityEngine;
+
+#endregion
 
 namespace LlockhamIndustries.Misc
 {
@@ -7,11 +10,12 @@ namespace LlockhamIndustries.Misc
     {
         private ParticleSystem partSystem;
 
-        void Start()
+        private void Start()
         {
             partSystem = GetComponent<ParticleSystem>();
         }
-        void Update()
+
+        private void Update()
         {
             if (partSystem != null && !partSystem.IsAlive()) Destroy(gameObject);
         }

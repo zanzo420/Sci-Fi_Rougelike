@@ -1569,12 +1569,8 @@ GameObject:
   - component: {fileID: 958210157}
   - component: {fileID: 958210156}
   - component: {fileID: 958210155}
-  - component: {fileID: 958210154}
-  - component: {fileID: 958210153}
-  - component: {fileID: 958210152}
-  - component: {fileID: 958210151}
-  - component: {fileID: 958210150}
   - component: {fileID: 958210159}
+  - component: {fileID: 958210150}
   m_Layer: 0
   m_Name: Cube
   m_TagString: Untagged
@@ -1583,53 +1579,6 @@ GameObject:
   m_StaticEditorFlags: 0
   m_IsActive: 1
 --- !u!114 &958210150
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 0}
-  m_GameObject: {fileID: 958210149}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 730a425e12bada54ea7376f3d70192a2, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
---- !u!114 &958210151
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 0}
-  m_GameObject: {fileID: 958210149}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 67c8a1c6552096b42a794bcd9399d309, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  maxStamina: 0
---- !u!114 &958210152
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 0}
-  m_GameObject: {fileID: 958210149}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: a1edb36cd085e144daada2eea0c92b5c, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  rotationTime: 0.5
---- !u!114 &958210153
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 0}
-  m_GameObject: {fileID: 958210149}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: d22fa9b418f37bb4da93880950d35575, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  moveTime: 1
---- !u!114 &958210154
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_PrefabParentObject: {fileID: 0}
@@ -3184,7 +3133,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a1edb36cd085e144daada2eea0c92b5c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  rotationTime: 0.5
+  rotationTime: 0.25
 --- !u!114 &1957603954
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -3196,7 +3145,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d22fa9b418f37bb4da93880950d35575, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  moveTime: 1
+  moveTime: 0.5
 --- !u!1001 &1978164457
 Prefab:
   m_ObjectHideFlags: 0

@@ -1,14 +1,23 @@
-﻿using System.Collections;
-using System.Collections.Generic;
+﻿#region
+
 using UnityEngine;
-using UnityEngine.SceneManagement;
 using UnityEngine.Events;
+using UnityEngine.SceneManagement;
 using UnityEngine.UI;
+
+#endregion
 
 namespace LlockhamIndustries.Misc
 {
     public class SceneSingleton : MonoBehaviour
     {
+        private static SceneSingleton system;
+
+        //Backing fields
+        private GameObject canvas;
+
+        private readonly SceneMenu menu = new SceneMenu();
+
         //Multi-Scene Singleton 
         public static SceneSingleton System
         {
@@ -16,38 +25,31 @@ namespace LlockhamIndustries.Misc
             {
                 if (system == null)
                 {
-                    GameObject go = new GameObject("Scene Manager");
+                    var go = new GameObject("Scene Manager");
                     go.AddComponent<SceneSingleton>();
                 }
                 return system;
             }
         }
-        private static SceneSingleton system;
 
         //Generic methods
         private void OnEnable()
         {
             if (system == null)
-            {
                 system = this;
-            }
             else if (this != system)
-            {
                 Destroy(gameObject);
-            }
         }
+
         private void Start()
         {
             DontDestroyOnLoad(gameObject);
         }
+
         private void Update()
         {
             if (Input.GetKeyDown(KeyCode.Escape)) OpenMenu();
         }
-
-        //Backing fields
-        private GameObject canvas;
-        private SceneMenu menu = new SceneMenu();
 
         public void OpenMenu()
         {
@@ -57,6 +59,7 @@ namespace LlockhamIndustries.Misc
             //Open our menu on the canvas
             menu.Open(System.canvas);
         }
+
         public void CloseMenu()
         {
             menu.Close();
@@ -67,9 +70,9 @@ namespace LlockhamIndustries.Misc
         {
             //Search for a suitable canvas
             Object[] Canvases = FindObjectsOfType<Canvas>();
-            for (int i = 0; i < Canvases.Length; i++)
+            for (var i = 0; i < Canvases.Length; i++)
             {
-                Canvas c = (Canvas)Canvases[i];
+                var c = (Canvas)Canvases[i];
                 if (c.renderMode == RenderMode.ScreenSpaceOverlay)
                 {
                     canvas = c.gameObject;
@@ -90,7 +93,7 @@ namespace LlockhamIndustries.Misc
 
     public class SceneMenu
     {
-        private int buttonCount = 5;
+        private readonly int buttonCount = 5;
         private GameObject window;
 
         //Primary Methods
@@ -99,6 +102,7 @@ namespace LlockhamIndustries.Misc
             if (window == null) GenerateMenu(Canvas);
             window.SetActive(true);
         }
+
         public void Close()
         {
             if (window != null && window.activeInHierarchy) window.SetActive(false);
@@ -112,14 +116,14 @@ namespace LlockhamIndustries.Misc
             window.transform.SetParent(Canvas.transform, false);
 
             //Setup transform
-            RectTransform rect = window.AddComponent<RectTransform>();
+            var rect = window.AddComponent<RectTransform>();
             rect.anchorMax = new Vector2(0.5f, 0.5f);
             rect.anchorMin = new Vector2(0.5f, 0.5f);
             rect.offsetMax = new Vector2(50, 0);
             rect.offsetMin = new Vector2(-50, -(buttonCount * 20) + 8);
 
             //Setup image
-            Image image = window.AddComponent<Image>();
+            var image = window.AddComponent<Image>();
             image.color = new Color(0.28f, 0.28f, 0.28f, 1);
 
             //Generate load buttons
@@ -131,34 +135,35 @@ namespace LlockhamIndustries.Misc
             //Generate cancel button
             GenerateButton("Cancel", 5, delegate { Close(); });
         }
+
         public void GenerateButton(string Text, int Index, UnityAction Action)
         {
             //Setup menu
-            GameObject bo = new GameObject("Scene Button");
+            var bo = new GameObject("Scene Button");
             bo.transform.SetParent(window.transform, false);
 
             //Setup transform
-            RectTransform rect = bo.AddComponent<RectTransform>();
-            float position = 1 - (((float)Index - 1) / buttonCount);
+            var rect = bo.AddComponent<RectTransform>();
+            var position = 1 - ((float)Index - 1) / buttonCount;
             rect.anchorMax = new Vector2(0.5f, position);
             rect.anchorMin = new Vector2(0.5f, position);
             rect.offsetMax = new Vector2(40, 0);
             rect.offsetMin = new Vector2(-40, -16);
 
             //Setup image
-            Image image = bo.AddComponent<Image>();
+            var image = bo.AddComponent<Image>();
             image.color = new Color(0.22f, 0.22f, 0.22f, 1);
 
             //Setup button
-            Button button = bo.AddComponent<Button>();
+            var button = bo.AddComponent<Button>();
             button.onClick.AddListener(Action);
 
             //Setup menu text
-            GameObject to = new GameObject("Button Text");
+            var to = new GameObject("Button Text");
             to.transform.SetParent(rect, false);
 
             //Setup text transform
-            RectTransform textRect = to.AddComponent<RectTransform>();
+            var textRect = to.AddComponent<RectTransform>();
             textRect.anchorMax = new Vector2(0, 0);
             textRect.anchorMin = new Vector2(0, 0);
             textRect.offsetMax = new Vector2(0, 0);

@@ -1,12 +1,12 @@
-﻿//Copyright © Darwin Willers 2017
+﻿#region
 
 using System;
 using UnityEngine;
 
+#endregion
 
 public class UnitInteractor : MonoBehaviour
 {
-
     public Action taskDone;
 
     public void Interact(Vector3 destination)
@@ -26,6 +26,4 @@ public class UnitInteractor : MonoBehaviour
 
         if (taskDone != null) taskDone();
     }
-
-
 }

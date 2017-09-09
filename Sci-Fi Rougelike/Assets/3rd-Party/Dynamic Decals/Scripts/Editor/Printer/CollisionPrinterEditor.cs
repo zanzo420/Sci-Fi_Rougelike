@@ -1,7 +1,9 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
+﻿#region
+
 using UnityEditor;
+using UnityEngine;
+
+#endregion
 
 namespace LlockhamIndustries.Decals
 {
@@ -9,10 +11,10 @@ namespace LlockhamIndustries.Decals
     [CustomEditor(typeof(CollisionPrinter))]
     public class CollisionPrinterEditor : PrinterEditor
     {
-        SerializedProperty rotationSource;
-        SerializedProperty condition;
-        SerializedProperty conditionTime;
-        SerializedProperty layers;
+        private SerializedProperty condition;
+        private SerializedProperty conditionTime;
+        private SerializedProperty layers;
+        private SerializedProperty rotationSource;
 
         public override void OnEnable()
         {
@@ -22,6 +24,7 @@ namespace LlockhamIndustries.Decals
             conditionTime = serializedObject.FindProperty("conditionTime");
             layers = serializedObject.FindProperty("layers");
         }
+
         public override void OnInspectorGUI()
         {
             //Update object
@@ -55,15 +58,14 @@ namespace LlockhamIndustries.Decals
             EditorGUI.indentLevel--;
             EditorGUILayout.Space();
         }
+
         private void LayersGUI()
         {
             if (prints.arraySize > 1 && printMethod.enumValueIndex == 2)
             {
-                int finalLayers = 0;
+                var finalLayers = 0;
                 foreach (SerializedProperty layermask in printLayers)
-                {
-                    finalLayers = (finalLayers | layermask.intValue);
-                }
+                    finalLayers = finalLayers | layermask.intValue;
                 layers.intValue = finalLayers;
             }
             else
@@ -75,6 +77,7 @@ namespace LlockhamIndustries.Decals
                 EditorGUILayout.Space();
             }
         }
+
         private void RotationGUI()
         {
             EditorGUILayout.LabelField(new GUIContent("Rotation Source", "What determines the rotation of our decal?"));

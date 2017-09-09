@@ -1,52 +1,34 @@
-﻿using UnityEngine;
-using System.Collections;
+﻿#region
+
+using System;
 using System.Collections.Generic;
 using LlockhamIndustries.ExtensionMethods;
-
+using UnityEngine;
 #if UNITY_EDITOR
 using UnityEditor;
 #endif
+
+#endregion
 
 namespace LlockhamIndustries.Decals
 {
     public class DynamicDecalSettings : ScriptableObject
     {
-        //Settings
-        public ShaderReplacement shaderReplacement;
         public bool forceForward;
-
-        //Pools
-        public PoolInstance[] pools;
-
-        //Masking
-        public ProjectionLayer[] Layers
-        {
-            get { return layers; }
-            set
-            {
-                if (layers != value)
-                {
-                    layers = value;
-                    CalculatePasses();
-                }
-            }
-        }
-        public List<ReplacementPass> Passes
-        {
-            get { return passes; }
-        }
-
-        //VR
-        public bool SinglePassVR
-        {
-            get { return singlepassVR; }
-        }
 
         //Backing fields
         [SerializeField]
         private ProjectionLayer[] layers;
+
         [SerializeField]
         private List<ReplacementPass> passes;
+
+        //Pools
+        public PoolInstance[] pools;
+
+        //Settings
+        public ShaderReplacement shaderReplacement;
+
         [SerializeField]
         private bool singlepassVR;
 
@@ -64,6 +46,31 @@ namespace LlockhamIndustries.Decals
             ResetMasking();
         }
 
+        //Masking
+        public ProjectionLayer[] Layers
+        {
+            get { return layers; }
+            set
+            {
+                if (layers != value)
+                {
+                    layers = value;
+                    CalculatePasses();
+                }
+            }
+        }
+
+        public List<ReplacementPass> Passes
+        {
+            get { return passes; }
+        }
+
+        //VR
+        public bool SinglePassVR
+        {
+            get { return singlepassVR; }
+        }
+
         //Reset
         public void ResetSettings()
         {
@@ -74,14 +81,16 @@ namespace LlockhamIndustries.Decals
             //Update renderers
             DynamicDecals.System.UpdateRenderers();
         }
+
         public void ResetPools()
         {
             //Reset pools to default values
-            pools = new PoolInstance[] { new PoolInstance("Default", null) };
+            pools = new[] { new PoolInstance("Default", null) };
         }
+
         public void ResetMasking()
         {
-            layers = new ProjectionLayer[] { new ProjectionLayer("Layer 1"), new ProjectionLayer("Layer 2"), new ProjectionLayer("Layer 3"), new ProjectionLayer("Layer 4") };
+            layers = new[] { new ProjectionLayer("Layer 1"), new ProjectionLayer("Layer 2"), new ProjectionLayer("Layer 3"), new ProjectionLayer("Layer 4") };
             CalculatePasses();
         }
 
@@ -92,10 +101,10 @@ namespace LlockhamIndustries.Decals
             if (passes == null) passes = new List<ReplacementPass>();
             else passes.Clear();
 
-            for (int i = 0; i < 32; i++)
+            for (var i = 0; i < 32; i++)
             {
                 //Generate layer vector
-                Vector4 layerVector = LayerVector(i);
+                var layerVector = LayerVector(i);
 
                 //Add to passes
                 AddToPasses(i, layerVector);
@@ -104,7 +113,7 @@ namespace LlockhamIndustries.Decals
 
         private Vector4 LayerVector (int LayerIndex)
         {
-            Vector4 vector = new Vector4(0, 0, 0, 0);
+            var vector = new Vector4(0, 0, 0, 0);
 
             if (layers[0].layers.Contains(LayerIndex)) vector.x = 1;
             if (layers[1].layers.Contains(LayerIndex)) vector.y = 1;
@@ -113,17 +122,16 @@ namespace LlockhamIndustries.Decals
 
             return vector;
         }
+
         private void AddToPasses(int LayerIndex, Vector4 LayerVector)
         {
             //Check if we can be added to an existing pass
-            for (int i = 0; i < passes.Count; i++)
-            {
+            for (var i = 0; i < passes.Count; i++)
                 if (passes[i].vector == LayerVector)
                 {
                     passes[i].layers = passes[i].layers.Add(LayerIndex);
                     return;
                 }
-            }
 
             //Create a new pass with the current layer vector
             passes.Add(new ReplacementPass(LayerIndex, LayerVector));
@@ -138,14 +146,14 @@ namespace LlockhamIndustries.Decals
         }
     }
 
-    public enum ShaderReplacement { Standard, Mobile, VR };
+    public enum ShaderReplacement { Standard, Mobile, VR }
 
-    [System.Serializable]
+    [Serializable]
     public class PoolInstance
     {
         public int id;
-        public string title;
         public int[] limits;
+        public string title;
 
         public PoolInstance(string Title, PoolInstance[] CurrentInstances)
         {
@@ -155,41 +163,36 @@ namespace LlockhamIndustries.Decals
             //15 Quality Settings maximum
             limits = new int[15];
             //Set all defaults
-            for (int i = 0; i < limits.Length; i++)
-            {
-                limits[i] = ((i + 1) * 400);
-            }
+            for (var i = 0; i < limits.Length; i++)
+                limits[i] = (i + 1) * 400;
         }
+
         private int UniqueID(PoolInstance[] CurrentInstances)
         {
             //We use an ID instead of a name or an index to keep track of our pool as it allows us to rename and reorder pools while maintaining a hidden reference to them. 
             //Also lookup from a dictionary is faster than iterating over all pools for a given name.
 
             //Start at 0 (1 if not the first) and iterate upwards until we have an ID not currently in use.
-            int ID = 0;
-            bool Unique = false;
+            var ID = 0;
+            var Unique = false;
 
             if (CurrentInstances != null)
-            {
                 while (!Unique)
                 {
                     //ID, wan't unique. Increment and check again.
                     ID++;
                     Unique = true;
                     //Start unique as true, then iterate over all instances to see if its otherwise.
-                    for (int i = 0; i < CurrentInstances.Length; i++)
-                    {
+                    for (var i = 0; i < CurrentInstances.Length; i++)
                         if (CurrentInstances[i] != null && ID == CurrentInstances[i].id) Unique = false;
-                    }
                 }
-            }
 
             //We have a unique ID! System falls apart if we have more than 2,147,483,647 pools at once. Seems unlikely.
             return ID;
         }
     }
 
-    [System.Serializable]
+    [Serializable]
     public struct ProjectionLayer
     {
         public string name;
@@ -203,7 +206,7 @@ namespace LlockhamIndustries.Decals
         public ProjectionLayer(string Name, int Layer)
         {
             name = Name;
-            layers = (1 << Layer);
+            layers = 1 << Layer;
         }
         public ProjectionLayer(string Name, LayerMask Layers)
         {
@@ -212,16 +215,16 @@ namespace LlockhamIndustries.Decals
         }
     }
 
-    [System.Serializable]
+    [Serializable]
     public class ReplacementPass
     {
-        public Vector4 vector;
         public LayerMask layers;
+        public Vector4 vector;
 
         public ReplacementPass(int LayerIndex, Vector4 LayerVector)
         {
             vector = LayerVector;
-            layers = (1 << LayerIndex);
+            layers = 1 << LayerIndex;
         }
     }
 }

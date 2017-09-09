@@ -1,6 +1,8 @@
-﻿using UnityEngine;
-using System.Collections;
-using System.Collections.Generic;
+﻿#region
+
+using UnityEngine;
+
+#endregion
 
 namespace LlockhamIndustries.Misc
 {
@@ -10,36 +12,37 @@ namespace LlockhamIndustries.Misc
     {
         //Inspector
         public float acceleration = 0.2f;
+
+        //Backing fields
+        private Animator anim;
+
+        private Vector2 locomotion;
+
+        private float locomotionStrength;
+        private float locomotionStrengthVelocity;
+        private Vector3 moveDirectionVelocity;
+        private Vector3 movement;
+        private float moveSpeedVelocity;
+        private float previousLocomotionStrength;
+
+        private Vector3 previousMovement;
+        private float previousMoveSpeed;
+
+        private float rotation;
+        private Vector3 rotationDirection;
         public float rotationSpeed = 0.2f;
+        private float rotationVelocity;
 
         //Properties
         public Vector3 Movement
         {
             set { movement = value; }
         }
+
         public Vector3 Direction
         {
             set { rotationDirection = value; }
         }
-
-        //Backing fields
-        Animator anim;
-
-        private float rotation;
-        private float rotationVelocity;
-        private Vector3 rotationDirection;
-
-        private Vector2 locomotion;
-        private Vector3 movement;
-        private float previousMoveSpeed;
-        private float moveSpeedVelocity;
-
-        private Vector3 previousMovement;
-        private Vector3 moveDirectionVelocity;
-
-        private float locomotionStrength = 0;
-        private float previousLocomotionStrength = 0;
-        private float locomotionStrengthVelocity = 0;
 
         //Generic Methods
         protected void Awake()
@@ -50,6 +53,7 @@ namespace LlockhamIndustries.Misc
             //set rotation forward
             rotation = Quaternion.LookRotation(transform.forward).eulerAngles.y;
         }
+
         protected void FixedUpdate()
         {
             UpdateRotation();
@@ -60,19 +64,22 @@ namespace LlockhamIndustries.Misc
         //Rotation
         public void UpdateRotation()
         {
-            float goalRotation = rotation;
+            var goalRotation = rotation;
 
             if (rotationDirection != Vector3.zero)
             {
                 goalRotation = Quaternion.LookRotation(rotationDirection).eulerAngles.y;
 
                 //Reduce our rotationSpeed as the unit moves faster
-                float MoveSpeedModifier = 1 + Mathf.Clamp01(locomotion.magnitude - 1);
-                float RotationSpeed = (1 / rotationSpeed * MoveSpeedModifier);
+                var MoveSpeedModifier = 1 + Mathf.Clamp01(locomotion.magnitude - 1);
+                var RotationSpeed = 1 / rotationSpeed * MoveSpeedModifier;
 
                 rotation = Mathf.SmoothDampAngle(rotation, goalRotation, ref rotationVelocity, RotationSpeed * 0.02f);
             }
-            else rotationVelocity = 0;
+            else
+            {
+                rotationVelocity = 0;
+            }
 
             //Set our rotation
             transform.rotation = Quaternion.Euler(new Vector3(0, rotation, 0));
@@ -82,15 +89,13 @@ namespace LlockhamIndustries.Misc
         public void UpdateLocomotionDirection()
         {
             //Smooth our Movement Direction
-            Vector3 Movement = Vector3.SmoothDamp(previousMovement, movement, ref moveDirectionVelocity, (1 / acceleration * 0.02f));
+            var Movement = Vector3.SmoothDamp(previousMovement, movement, ref moveDirectionVelocity, 1 / acceleration * 0.02f);
             previousMovement = Movement;
 
             //Get the direction as an angle from forward, in Degrees, from -180 to 180..
-            float directionAngle = Vector3.Angle(transform.forward, Movement.normalized);
+            var directionAngle = Vector3.Angle(transform.forward, Movement.normalized);
             if (Mathf.Sign(Vector3.Dot(transform.right, Movement.normalized)) < 0)
-            {
                 directionAngle = 360 - directionAngle;
-            }
             directionAngle = directionAngle * (Mathf.PI / 180);
 
             //Convert This Angle into seperate X and Y vectors..
@@ -103,20 +108,21 @@ namespace LlockhamIndustries.Misc
             //The Sideward Movement of the character can only reach 0.5f, so if it's over, normalise our locomotion until it's at 0.5f
             if (locomotion.x > 0.5f)
             {
-                float locNormalise = 0.5f / locomotion.x;
+                var locNormalise = 0.5f / locomotion.x;
                 locomotion *= locNormalise;
             }
 
             anim.SetFloat("X", locomotion.x);
             anim.SetFloat("Y", locomotion.y);
         }
+
         public void UpdateLocomotionStrength()
         {
             //General Movement
-            float LocomotionStrengthMovement = Mathf.Clamp01(movement.magnitude * 2);
+            var LocomotionStrengthMovement = Mathf.Clamp01(movement.magnitude * 2);
 
             //Rotating on the Spot
-            float LocomotionStrengthRotation = Mathf.Clamp(Mathf.Abs(rotationVelocity / 400), 0, 1);
+            var LocomotionStrengthRotation = Mathf.Clamp(Mathf.Abs(rotationVelocity / 400), 0, 1);
 
             //Determine Locomotion Strength and Smooth
             locomotionStrength = Mathf.Max(LocomotionStrengthMovement, LocomotionStrengthRotation);

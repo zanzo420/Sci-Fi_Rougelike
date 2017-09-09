@@ -1,7 +1,9 @@
-﻿//Copyright © Darwin Willers 2017
+﻿#region
 
 using System.Collections.Generic;
 using UnityEngine;
+
+#endregion
 
 [RequireComponent(typeof(TaskControler))]
 public class Unit : MonoBehaviour
@@ -46,16 +48,15 @@ public class Unit : MonoBehaviour
         if (tile.HostingObject != null)
         {
             var interactabel = tile.HostingObject.GetComponent<Interactabel>();
-            if (interactabel != null)
+            if (interactabel == null) return;
+            if (GetGap(transform.position, tile.Position) > 1)
             {
-                if (GetGap(transform.position, tile.Position) > 1)
-                    Debug.Log("Interactabel to far away");
-                else
-                {
-                    _taskControler.AddTask(TaskType.LookAt, tile.Position);
-                    _taskControler.AddTask(TaskType.Interact, tile.Position);
-                }
-
+                Debug.Log("Interactabel to far away");
+            }
+            else
+            {
+                _taskControler.AddTask(TaskType.LookAt, tile.Position);
+                _taskControler.AddTask(TaskType.Interact, tile.Position);
             }
         }
         else if (tile.Walkable)
@@ -68,9 +69,7 @@ public class Unit : MonoBehaviour
             UseStamina(tiles.Count);
 
             while (tiles.Count > 0)
-            {
                 _taskControler.AddTask(tiles.Pop().Position);
-            }
         }
     }
 
@@ -79,7 +78,4 @@ public class Unit : MonoBehaviour
             var distance = b - a;
             return (int) (Mathf.Abs(distance.x) + Mathf.Abs(distance.z));
         }
-    
-
-
 }

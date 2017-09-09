@@ -1,8 +1,8 @@
-﻿using System.Collections;
-using System.Collections.Generic;
+﻿#region
+
 using UnityEngine;
 
-using LlockhamIndustries.Decals;
+#endregion
 
 namespace LlockhamIndustries.Misc
 {
@@ -11,21 +11,24 @@ namespace LlockhamIndustries.Misc
     [RequireComponent(typeof(FirstPersonCharacterController))]
     public class GooController : MonoBehaviour
     {
-        [Header("Slide")]
-        public float slideSpeed = 25;
+        private Rigidbody attachedRigidbody;
 
         [Header("Bounce")]
         public float bouncyness = 1;
 
-        //Backing fields
-        private PhysicMaterial material;
-        private Rigidbody attachedRigidbody;
         private FirstPersonCharacterController controller;
 
-        private float originalSpeed;
-        private float originalSFriction;
+        //Backing fields
+        private PhysicMaterial material;
+
         private float originalDFriction;
         private PhysicMaterialCombine originalFrictionCombine;
+        private float originalSFriction;
+
+        private float originalSpeed;
+
+        [Header("Slide")]
+        public float slideSpeed = 25;
 
         //Generic methods
         private void Awake()
@@ -46,7 +49,6 @@ namespace LlockhamIndustries.Misc
         private void FixedUpdate()
         {
             if (controller.Grounded)
-            {
                 if (GooManager.WithinGoo(GooType.Slide, transform.position + new Vector3(0, -1, 0), 0.2f))
                 {
                     //Increase movement speed
@@ -67,14 +69,12 @@ namespace LlockhamIndustries.Misc
                     material.dynamicFriction = originalDFriction;
                     material.frictionCombine = originalFrictionCombine;
                 }
-            }
         }
+
         private void OnCollisionEnter(Collision collision)
         {
             if (GooManager.WithinGoo(GooType.Bounce, transform.position + new Vector3(0, -1, 0), 0.2f))
-            {
                 attachedRigidbody.AddForce(collision.impulse * bouncyness, ForceMode.Impulse);
-            }
         }
     }
 }

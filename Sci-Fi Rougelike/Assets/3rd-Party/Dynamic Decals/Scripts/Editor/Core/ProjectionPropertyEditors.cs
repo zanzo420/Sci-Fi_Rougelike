@@ -1,13 +1,9 @@
-﻿using UnityEngine;
+﻿#region
+
 using UnityEditor;
+using UnityEngine;
 
-using System;
-using System.Text;
-using System.Collections;
-using System.Collections.Generic;
-using System.Linq;
-
-using LlockhamIndustries;
+#endregion
 
 namespace LlockhamIndustries.Decals
 {    
@@ -30,12 +26,12 @@ namespace LlockhamIndustries.Decals
 
     public abstract class ShapeDrawer : PropertyGroupDrawer
     {
+        protected SerializedProperty cutoff;
+        protected SerializedProperty multiplier;
         internal ShapeTexturePreview preview;
 
         protected SerializedProperty texture;
-        protected SerializedProperty multiplier;
         protected SerializedProperty transparencyType;
-        protected SerializedProperty cutoff;
 
         public ShapeDrawer(GUIContent Label, SerializedProperty PropertyGroup, SerializedProperty TransparencyType, SerializedProperty Cutoff, ProjectionEditor Editor)
         {
@@ -55,6 +51,7 @@ namespace LlockhamIndustries.Decals
         {
             preview.Terminate();
         }
+
         public override void Mark()
         {
             preview.Mark();
@@ -62,12 +59,12 @@ namespace LlockhamIndustries.Decals
     }
     public abstract class AlbedoDrawer : PropertyGroupDrawer
     {
+        protected SerializedProperty color;
+        protected SerializedProperty cutoff;
         internal AlbedoTexturePreview preview;
 
         protected SerializedProperty texture;
-        protected SerializedProperty color;
         protected SerializedProperty transparencyType;
-        protected SerializedProperty cutoff;
 
         public AlbedoDrawer(GUIContent Label, SerializedProperty PropertyGroup, SerializedProperty TransparencyType, SerializedProperty Cutoff, ProjectionEditor Editor)
         {
@@ -87,6 +84,7 @@ namespace LlockhamIndustries.Decals
         {
             preview.Terminate();
         }
+
         public override void Mark()
         {
             preview.Mark();
@@ -94,10 +92,10 @@ namespace LlockhamIndustries.Decals
     }
     public abstract class GlossDrawer : PropertyGroupDrawer
     {
+        protected SerializedProperty glossiness;
         internal GreyScaleTexturePreview preview;
 
         protected SerializedProperty texture;
-        protected SerializedProperty glossiness;
 
         public GlossDrawer(GUIContent Label, SerializedProperty PropertyGroup, ProjectionEditor Editor)
         {
@@ -114,6 +112,7 @@ namespace LlockhamIndustries.Decals
         {
             preview.Terminate();
         }
+
         public override void Mark()
         {
             preview.Mark();
@@ -122,11 +121,11 @@ namespace LlockhamIndustries.Decals
     public abstract class MetallicDrawer : PropertyGroupDrawer
     {
         internal GreyScaleTexturePreview gloss;
+        protected SerializedProperty glossiness;
         internal GreyScaleTexturePreview metallic;
+        protected SerializedProperty metallicity;
 
         protected SerializedProperty texture;
-        protected SerializedProperty metallicity;
-        protected SerializedProperty glossiness;
 
         public MetallicDrawer(GUIContent Label, SerializedProperty PropertyGroup, ProjectionEditor Editor)
         {
@@ -146,6 +145,7 @@ namespace LlockhamIndustries.Decals
             gloss.Terminate();
             metallic.Terminate();
         }
+
         public override void Mark()
         {
             gloss.Mark();
@@ -154,12 +154,12 @@ namespace LlockhamIndustries.Decals
     }
     public abstract class SpecularDrawer : PropertyGroupDrawer
     {
+        protected SerializedProperty color;
         internal GreyScaleTexturePreview gloss;
+        protected SerializedProperty glossiness;
         internal ColorTexturePreview specular;
 
         protected SerializedProperty texture;
-        protected SerializedProperty color;
-        protected SerializedProperty glossiness;
 
         public SpecularDrawer(GUIContent Label, SerializedProperty PropertyGroup, ProjectionEditor Editor)
         {
@@ -179,6 +179,7 @@ namespace LlockhamIndustries.Decals
             gloss.Terminate();
             specular.Terminate();
         }
+
         public override void Mark()
         {
             gloss.Mark();
@@ -188,9 +189,9 @@ namespace LlockhamIndustries.Decals
     public abstract class NormalDrawer : PropertyGroupDrawer
     {
         internal NormalTexturePreview preview;
+        protected SerializedProperty strength;
 
         protected SerializedProperty texture;
-        protected SerializedProperty strength;
 
         public NormalDrawer(GUIContent Label, SerializedProperty PropertyGroup, ProjectionEditor Editor)
         {
@@ -207,6 +208,7 @@ namespace LlockhamIndustries.Decals
         {
             preview.Terminate();
         }
+
         public override void Mark()
         {
             preview.Mark();
@@ -214,11 +216,11 @@ namespace LlockhamIndustries.Decals
     }
     public abstract class EmissiveDrawer : PropertyGroupDrawer
     {
+        protected SerializedProperty color;
+        protected SerializedProperty intensity;
         internal EmissiveTexturePreview preview;
 
         protected SerializedProperty texture;
-        protected SerializedProperty color;
-        protected SerializedProperty intensity;
 
         public EmissiveDrawer(GUIContent Label, SerializedProperty PropertyGroup, ProjectionEditor Editor)
         {
@@ -236,6 +238,7 @@ namespace LlockhamIndustries.Decals
         {
             preview.Terminate();
         }
+
         public override void Mark()
         {
             preview.Mark();
@@ -251,6 +254,7 @@ namespace LlockhamIndustries.Decals
         {
             preview.Initialize(Mathf.FloorToInt(Texture.x), Mathf.FloorToInt(Texture.y));
         }
+
         public override void OnGUI(Rect Rect)
         {
             EditorGUI.DrawRect(new Rect(Rect.x, Rect.y + 2, Rect.width, Rect.height - 6), LlockhamEditorUtility.MidgroundColor);
@@ -277,9 +281,10 @@ namespace LlockhamIndustries.Decals
 
             GUI.EndGroup();
         }
+
         public override void OnGUILayout()
         {
-            Rect Rect = GUILayoutUtility.GetRect(0, Mathf.Max(LlockhamEditorUtility.TexturePreviewSize + 16 + LlockhamEditorUtility.Spacing, 68 + LlockhamEditorUtility.Spacing));
+            var Rect = GUILayoutUtility.GetRect(0, Mathf.Max(LlockhamEditorUtility.TexturePreviewSize + 16 + LlockhamEditorUtility.Spacing, 68 + LlockhamEditorUtility.Spacing));
             OnGUI(Rect);
         }
     }
@@ -291,6 +296,7 @@ namespace LlockhamIndustries.Decals
         {
             preview.Initialize(Mathf.FloorToInt(Texture.x), Mathf.FloorToInt(Texture.y));
         }
+
         public override void OnGUI(Rect Rect)
         {
             EditorGUI.DrawRect(new Rect(Rect.x, Rect.y + 2, Rect.width, Rect.height - 6), LlockhamEditorUtility.MidgroundColor);
@@ -317,9 +323,10 @@ namespace LlockhamIndustries.Decals
 
             GUI.EndGroup();
         }
+
         public override void OnGUILayout()
         {
-            Rect Rect = GUILayoutUtility.GetRect(0, Mathf.Max(LlockhamEditorUtility.TexturePreviewSize + 16 + LlockhamEditorUtility.Spacing, 68 + LlockhamEditorUtility.Spacing));
+            var Rect = GUILayoutUtility.GetRect(0, Mathf.Max(LlockhamEditorUtility.TexturePreviewSize + 16 + LlockhamEditorUtility.Spacing, 68 + LlockhamEditorUtility.Spacing));
             OnGUI(Rect);
         }
     }
@@ -331,6 +338,7 @@ namespace LlockhamIndustries.Decals
         {
             preview.Initialize(Mathf.FloorToInt(Texture.x), Mathf.FloorToInt(Texture.y));
         }
+
         public override void OnGUI(Rect Rect)
         {
             EditorGUI.DrawRect(new Rect(Rect.x, Rect.y + 2, Rect.width, Rect.height - 6), LlockhamEditorUtility.MidgroundColor);
@@ -357,9 +365,10 @@ namespace LlockhamIndustries.Decals
 
             GUI.EndGroup();
         }
+
         public override void OnGUILayout()
         {
-            Rect Rect = GUILayoutUtility.GetRect(0, Mathf.Max(LlockhamEditorUtility.TexturePreviewSize + 16 + LlockhamEditorUtility.Spacing, 68 + LlockhamEditorUtility.Spacing));
+            var Rect = GUILayoutUtility.GetRect(0, Mathf.Max(LlockhamEditorUtility.TexturePreviewSize + 16 + LlockhamEditorUtility.Spacing, 68 + LlockhamEditorUtility.Spacing));
             OnGUI(Rect);
         }
     }
@@ -372,6 +381,7 @@ namespace LlockhamIndustries.Decals
             gloss.Initialize(Mathf.FloorToInt(Texture.x), Mathf.FloorToInt(Texture.y));
             metallic.Initialize(Mathf.FloorToInt(Texture.x), Mathf.FloorToInt(Texture.y));
         }
+
         public override void OnGUI(Rect Rect)
         {
             EditorGUI.DrawRect(new Rect(Rect.x, Rect.y + 2, Rect.width, Rect.height - 6), LlockhamEditorUtility.MidgroundColor);
@@ -407,9 +417,10 @@ namespace LlockhamIndustries.Decals
 
             GUI.EndGroup();
         }
+
         public override void OnGUILayout()
         {
-            Rect Rect = GUILayoutUtility.GetRect(0, Mathf.Max((LlockhamEditorUtility.TexturePreviewSize * 2) + 20 + LlockhamEditorUtility.Spacing, 124 + LlockhamEditorUtility.Spacing));
+            var Rect = GUILayoutUtility.GetRect(0, Mathf.Max(LlockhamEditorUtility.TexturePreviewSize * 2 + 20 + LlockhamEditorUtility.Spacing, 124 + LlockhamEditorUtility.Spacing));
             OnGUI(Rect);
         }
     }
@@ -422,6 +433,7 @@ namespace LlockhamIndustries.Decals
             gloss.Initialize(Mathf.FloorToInt(Texture.x), Mathf.FloorToInt(Texture.y));
             specular.Initialize(Mathf.FloorToInt(Texture.x), Mathf.FloorToInt(Texture.y));
         }
+
         public override void OnGUI(Rect Rect)
         {
             EditorGUI.DrawRect(new Rect(Rect.x, Rect.y + 2, Rect.width, Rect.height - 6), LlockhamEditorUtility.MidgroundColor);
@@ -457,9 +469,10 @@ namespace LlockhamIndustries.Decals
 
             GUI.EndGroup();
         }
+
         public override void OnGUILayout()
         {
-            Rect Rect = GUILayoutUtility.GetRect(0, Mathf.Max((LlockhamEditorUtility.TexturePreviewSize * 2) + 20 + LlockhamEditorUtility.Spacing, 124 + LlockhamEditorUtility.Spacing));
+            var Rect = GUILayoutUtility.GetRect(0, Mathf.Max(LlockhamEditorUtility.TexturePreviewSize * 2 + 20 + LlockhamEditorUtility.Spacing, 124 + LlockhamEditorUtility.Spacing));
             OnGUI(Rect);
         }
     }
@@ -471,6 +484,7 @@ namespace LlockhamIndustries.Decals
         {
             preview.Initialize(Mathf.FloorToInt(Texture.x), Mathf.FloorToInt(Texture.y));
         }
+
         public override void OnGUI(Rect Rect)
         {
             EditorGUI.DrawRect(new Rect(Rect.x, Rect.y + 2, Rect.width, Rect.height - 6), LlockhamEditorUtility.MidgroundColor);
@@ -497,21 +511,22 @@ namespace LlockhamIndustries.Decals
 
             GUI.EndGroup();
         }
+
         public override void OnGUILayout()
         {
-            Rect Rect = GUILayoutUtility.GetRect(0, Mathf.Max(LlockhamEditorUtility.TexturePreviewSize + 16 + LlockhamEditorUtility.Spacing, 68 + LlockhamEditorUtility.Spacing));
+            var Rect = GUILayoutUtility.GetRect(0, Mathf.Max(LlockhamEditorUtility.TexturePreviewSize + 16 + LlockhamEditorUtility.Spacing, 68 + LlockhamEditorUtility.Spacing));
             OnGUI(Rect);
         }
     }
     public class EmissiveTextureDrawer : EmissiveDrawer
     {
-        
         public EmissiveTextureDrawer(GUIContent Label, SerializedProperty PropertyGroup, ProjectionEditor Editor) : base(Label, PropertyGroup, Editor) {}
 
         public override void Initialize()
         {
             preview.Initialize(Mathf.FloorToInt(Texture.x), Mathf.FloorToInt(Texture.y));
         }
+
         public override void OnGUI(Rect Rect)
         {
             EditorGUI.DrawRect(new Rect(Rect.x, Rect.y + 2, Rect.width, Rect.height - 6), LlockhamEditorUtility.MidgroundColor);
@@ -540,9 +555,10 @@ namespace LlockhamIndustries.Decals
 
             GUI.EndGroup();
         }
+
         public override void OnGUILayout()
         {
-            Rect Rect = GUILayoutUtility.GetRect(0, Mathf.Max(LlockhamEditorUtility.TexturePreviewSize + 16 + LlockhamEditorUtility.Spacing, 68 + LlockhamEditorUtility.Spacing));
+            var Rect = GUILayoutUtility.GetRect(0, Mathf.Max(LlockhamEditorUtility.TexturePreviewSize + 16 + LlockhamEditorUtility.Spacing, 68 + LlockhamEditorUtility.Spacing));
             OnGUI(Rect);
         }
     }
@@ -556,6 +572,7 @@ namespace LlockhamIndustries.Decals
         {
             preview.Initialize(Mathf.FloorToInt(Gradient.x), Mathf.FloorToInt(Gradient.y));
         }
+
         public override void OnGUI(Rect Rect)
         {
             EditorGUI.DrawRect(new Rect(Rect.x, Rect.y + 2, Rect.width, Rect.height - 6), LlockhamEditorUtility.MidgroundColor);
@@ -582,9 +599,10 @@ namespace LlockhamIndustries.Decals
 
             GUI.EndGroup();
         }
+
         public override void OnGUILayout()
         {
-            Rect Rect = GUILayoutUtility.GetRect(0, Mathf.Max(LlockhamEditorUtility.TexturePreviewSize + 16 + LlockhamEditorUtility.Spacing, 68 + LlockhamEditorUtility.Spacing));
+            var Rect = GUILayoutUtility.GetRect(0, Mathf.Max(LlockhamEditorUtility.TexturePreviewSize + 16 + LlockhamEditorUtility.Spacing, 68 + LlockhamEditorUtility.Spacing));
             OnGUI(Rect);
         }
     }
@@ -596,6 +614,7 @@ namespace LlockhamIndustries.Decals
         {
             preview.Initialize(Mathf.FloorToInt(Gradient.x), Mathf.FloorToInt(Gradient.y));
         }
+
         public override void OnGUI(Rect Rect)
         {
             EditorGUI.DrawRect(new Rect(Rect.x, Rect.y + 2, Rect.width, Rect.height - 6), LlockhamEditorUtility.MidgroundColor);
@@ -607,8 +626,8 @@ namespace LlockhamIndustries.Decals
             //Properties
             EditorGUI.BeginChangeCheck();
 
-            color.colorValue = EditorGUI.ColorField(new Rect(4, 24, (Rect.width / 2) - 12, 16), color.colorValue);
-            EditorGUI.PropertyField(new Rect(8 + (Rect.width / 2), 24, (Rect.width / 2) - 12, 16), texture, new GUIContent(""));
+            color.colorValue = EditorGUI.ColorField(new Rect(4, 24, Rect.width / 2 - 12, 16), color.colorValue);
+            EditorGUI.PropertyField(new Rect(8 + Rect.width / 2, 24, Rect.width / 2 - 12, 16), texture, new GUIContent(""));
 
             if (EditorGUI.EndChangeCheck())
             {
@@ -622,9 +641,10 @@ namespace LlockhamIndustries.Decals
 
             GUI.EndGroup();
         }
+
         public override void OnGUILayout()
         {
-            Rect Rect = GUILayoutUtility.GetRect(0, Mathf.Max(LlockhamEditorUtility.TexturePreviewSize + 16 + LlockhamEditorUtility.Spacing, 68 + LlockhamEditorUtility.Spacing));
+            var Rect = GUILayoutUtility.GetRect(0, Mathf.Max(LlockhamEditorUtility.TexturePreviewSize + 16 + LlockhamEditorUtility.Spacing, 68 + LlockhamEditorUtility.Spacing));
             OnGUI(Rect);
         }
     }
@@ -634,57 +654,46 @@ namespace LlockhamIndustries.Decals
     {
         //Texture Previews
         protected static Color Border = new Color(0.14f, 0.14f, 0.14f, 1);
+
         protected static int BorderWidth = 3;
         protected static int TextureSize = 64;
         protected static int CheckerSize = 16;
 
         protected static Color CheckerPrimary = new Color(0.35f, 0.35f, 0.35f, 1);
         protected static Color CheckerSecondary = new Color(0.6f, 0.6f, 0.6f, 1);
-        protected static Color CheckerColor(int x, int y)
-        {
-            if ((x / CheckerSize) % 2 != 0)
-            {
-                if ((y / CheckerSize) % 2 != 0)
-                {
-                    return CheckerPrimary;
-                }
-                else
-                {
-                    return CheckerSecondary;
-                }
-            }
-            else
-            {
-                if ((y / CheckerSize) % 2 != 0)
-                {
-                    return CheckerSecondary;
-                }
-                else
-                {
-                    return CheckerPrimary;
-                }
-            }
-        }
+        protected bool marked = true;
+        protected Texture2D texture;
 
         public Texture2D Texture
         {
             get { return texture; }
         }
-        protected Texture2D texture;
+
+        protected static Color CheckerColor(int x, int y)
+        {
+            if (x / CheckerSize % 2 != 0)
+                if (y / CheckerSize % 2 != 0)
+                    return CheckerPrimary;
+                else
+                    return CheckerSecondary;
+            if (y / CheckerSize % 2 != 0)
+                return CheckerSecondary;
+            return CheckerPrimary;
+        }
 
         public void Mark()
         {
             marked = true;
         }
-        protected bool marked = true;
 
         public void Initialize(int Width, int Height)
         {
             if (texture == null) texture = new Texture2D(Width, Height);
         }
+
         public void Terminate()
         {
-            if (texture != null) UnityEngine.Object.DestroyImmediate(texture);
+            if (texture != null) Object.DestroyImmediate(texture);
         }
     }
 
@@ -694,50 +703,48 @@ namespace LlockhamIndustries.Decals
         {
             if (marked)
             {
-                Texture2D tex = LlockhamEditorUtility.TextureFromProperty(ShapeTexture);
-                float mul = Multiplier.floatValue;
+                var tex = LlockhamEditorUtility.TextureFromProperty(ShapeTexture);
+                var mul = Multiplier.floatValue;
 
-                bool cutout = (TransparencyType.enumValueIndex == 0);
-                float cutoff = Cutoff.floatValue;
+                var cutout = TransparencyType.enumValueIndex == 0;
+                var cutoff = Cutoff.floatValue;
 
-                Color[] pixels = new Color[texture.width * texture.height];
-                for (int x = 0; x < texture.width; x++)
+                var pixels = new Color[texture.width * texture.height];
+                for (var x = 0; x < texture.width; x++)
+                for (var y = 0; y < texture.height; y++)
                 {
-                    for (int y = 0; y < texture.height; y++)
-                    {
-                        //Determine our pixel color
-                        Color texPixel;
+                    //Determine our pixel color
+                    Color texPixel;
 
-                        //Border
-                        if (x < BorderWidth || x > texture.width - BorderWidth || y < BorderWidth || y > texture.height - BorderWidth)
+                    //Border
+                    if (x < BorderWidth || x > texture.width - BorderWidth || y < BorderWidth || y > texture.height - BorderWidth)
+                    {
+                        texPixel = Border;
+                    }
+                    else
+                    {
+                        //Alpha
+                        float alpha = 0;
+
+                        //Texture & color alpha
+                        if (tex != null)
                         {
-                            texPixel = Border;
+                            alpha = tex.GetPixel(Mathf.FloorToInt(tex.width / texture.width * y), Mathf.FloorToInt(tex.height / texture.height * x)).r;
+                            alpha = alpha * mul;
                         }
+                        //Color alpha
                         else
                         {
-                            //Alpha
-                            float alpha = 0;
-
-                            //Texture & color alpha
-                            if (tex != null)
-                            {
-                                alpha = tex.GetPixel(Mathf.FloorToInt(tex.width / texture.width * y), Mathf.FloorToInt(tex.height / texture.height * x)).r;
-                                alpha = alpha * mul;
-                            }
-                            //Color alpha
-                            else
-                            {
-                                alpha = mul;
-                            }
-
-                            //Blend between black and what based on alpha
-                            if (cutout) alpha = (alpha < cutoff) ? 0 : 1;
-                            texPixel = Color.Lerp(Color.black, Color.white, alpha);
+                            alpha = mul;
                         }
 
-                        //Write to pixel
-                        pixels[x * texture.width + y] = texPixel;
+                        //Blend between black and what based on alpha
+                        if (cutout) alpha = alpha < cutoff ? 0 : 1;
+                        texPixel = Color.Lerp(Color.black, Color.white, alpha);
                     }
+
+                    //Write to pixel
+                    pixels[x * texture.width + y] = texPixel;
                 }
 
                 texture.SetPixels(pixels);
@@ -754,47 +761,45 @@ namespace LlockhamIndustries.Decals
         {
             if (marked)
             {
-                Texture2D tex = LlockhamEditorUtility.TextureFromProperty(AlbedoTexture);
-                Color color = AlbedoColor.colorValue;
+                var tex = LlockhamEditorUtility.TextureFromProperty(AlbedoTexture);
+                var color = AlbedoColor.colorValue;
 
-                bool cutout = (TransparencyType.enumValueIndex == 0);
-                float cutoff = Cutoff.floatValue;
+                var cutout = TransparencyType.enumValueIndex == 0;
+                var cutoff = Cutoff.floatValue;
 
-                Color[] pixels = new Color[texture.width * texture.height];
-                for (int x = 0; x < texture.width; x++)
+                var pixels = new Color[texture.width * texture.height];
+                for (var x = 0; x < texture.width; x++)
+                for (var y = 0; y < texture.height; y++)
                 {
-                    for (int y = 0; y < texture.height; y++)
-                    {
-                        //Determine our pixel color
-                        Color texPixel;
+                    //Determine our pixel color
+                    Color texPixel;
 
-                        //Border
-                        if (x < BorderWidth || x > texture.width - BorderWidth || y < BorderWidth || y > texture.height - BorderWidth)
+                    //Border
+                    if (x < BorderWidth || x > texture.width - BorderWidth || y < BorderWidth || y > texture.height - BorderWidth)
+                    {
+                        texPixel = Border;
+                    }
+                    else
+                    {
+                        //Texture
+                        if (tex != null)
                         {
-                            texPixel = Border;
+                            texPixel = tex.GetPixel(Mathf.FloorToInt(tex.width / texture.width * y), Mathf.FloorToInt(tex.height / texture.height * x));
+                            texPixel = texPixel * color;
                         }
+                        //Color
                         else
                         {
-                            //Texture
-                            if (tex != null)
-                            {
-                                texPixel = tex.GetPixel(Mathf.FloorToInt(tex.width / texture.width * y), Mathf.FloorToInt(tex.height / texture.height * x));
-                                texPixel = texPixel * color;
-                            }
-                            //Color
-                            else
-                            {
-                                texPixel = color;
-                            }
-
-                            //Checker
-                            if (cutout) texPixel.a = (texPixel.a < cutoff) ? 0 : 1;
-                            texPixel = Color.Lerp(CheckerColor(x, y), texPixel, texPixel.a);
+                            texPixel = color;
                         }
 
-                        //Write to pixel
-                        pixels[x * texture.width + y] = texPixel;
+                        //Checker
+                        if (cutout) texPixel.a = texPixel.a < cutoff ? 0 : 1;
+                        texPixel = Color.Lerp(CheckerColor(x, y), texPixel, texPixel.a);
                     }
+
+                    //Write to pixel
+                    pixels[x * texture.width + y] = texPixel;
                 }
 
                 texture.SetPixels(pixels);
@@ -811,46 +816,44 @@ namespace LlockhamIndustries.Decals
         {
             if (marked)
             {
-                Texture2D tex = LlockhamEditorUtility.TextureFromProperty(Texture);
-                float strength = Strength.floatValue;
+                var tex = LlockhamEditorUtility.TextureFromProperty(Texture);
+                var strength = Strength.floatValue;
 
-                Color[] pixels = new Color[texture.width * texture.height];
-                for (int x = 0; x < texture.width; x++)
+                var pixels = new Color[texture.width * texture.height];
+                for (var x = 0; x < texture.width; x++)
+                for (var y = 0; y < texture.height; y++)
                 {
-                    for (int y = 0; y < texture.height; y++)
-                    {
-                        //Determine our pixel color
-                        Color texPixel;
+                    //Determine our pixel color
+                    Color texPixel;
 
-                        //Border
-                        if (x < BorderWidth || x > texture.width - BorderWidth || y < BorderWidth || y > texture.height - BorderWidth)
+                    //Border
+                    if (x < BorderWidth || x > texture.width - BorderWidth || y < BorderWidth || y > texture.height - BorderWidth)
+                    {
+                        texPixel = Border;
+                    }
+                    else
+                    {
+                        if (tex != null && strength != 0)
                         {
-                            texPixel = Border;
+                            texPixel = tex.GetPixel(Mathf.FloorToInt(tex.width / texture.width * y), Mathf.FloorToInt(tex.height / texture.height * x));
+                            //Unpack normals
+                            var pixel = new Vector3(texPixel.r * 2 - 1, texPixel.g * 2 - 1, texPixel.b * 2 - 1);
+                            //Modify
+                            pixel.z /= strength;
+                            pixel = pixel.normalized;
+                            //Apply back to pixel
+                            texPixel.r = (pixel.x + 1) / 2;
+                            texPixel.g = (pixel.y + 1) / 2;
+                            texPixel.b = (pixel.z + 1) / 2;
                         }
                         else
                         {
-                            if (tex != null && strength != 0)
-                            {
-                                texPixel = tex.GetPixel(Mathf.FloorToInt(tex.width / texture.width * y), Mathf.FloorToInt(tex.height / texture.height * x));
-                                //Unpack normals
-                                Vector3 pixel = new Vector3((texPixel.r * 2) - 1, (texPixel.g * 2) - 1, (texPixel.b * 2) - 1);
-                                //Modify
-                                pixel.z /= strength;
-                                pixel = pixel.normalized;
-                                //Apply back to pixel
-                                texPixel.r = (pixel.x + 1) / 2;
-                                texPixel.g = (pixel.y + 1) / 2;
-                                texPixel.b = (pixel.z + 1) / 2;
-                            }
-                            else
-                            {
-                                texPixel = Color.black;
-                            }
+                            texPixel = Color.black;
                         }
-
-                        //Write to pixel
-                        pixels[x * texture.width + y] = texPixel;
                     }
+
+                    //Write to pixel
+                    pixels[x * texture.width + y] = texPixel;
                 }
 
                 texture.SetPixels(pixels);
@@ -867,41 +870,39 @@ namespace LlockhamIndustries.Decals
         {
             if (marked)
             {
-                Texture2D tex = LlockhamEditorUtility.TextureFromProperty(Texture);
-                Color color = Color.colorValue;
-                float intensity = Intensity.floatValue;
+                var tex = LlockhamEditorUtility.TextureFromProperty(Texture);
+                var color = Color.colorValue;
+                var intensity = Intensity.floatValue;
 
-                Color[] pixels = new Color[texture.width * texture.height];
-                for (int x = 0; x < texture.width; x++)
+                var pixels = new Color[texture.width * texture.height];
+                for (var x = 0; x < texture.width; x++)
+                for (var y = 0; y < texture.height; y++)
                 {
-                    for (int y = 0; y < texture.height; y++)
-                    {
-                        //Determine our pixel color
-                        Color texPixel;
+                    //Determine our pixel color
+                    Color texPixel;
 
-                        //Border
-                        if (x < BorderWidth || x > texture.width - BorderWidth || y < BorderWidth || y > texture.height - BorderWidth)
+                    //Border
+                    if (x < BorderWidth || x > texture.width - BorderWidth || y < BorderWidth || y > texture.height - BorderWidth)
+                    {
+                        texPixel = Border;
+                    }
+                    else
+                    {
+                        //Texture
+                        if (tex != null)
                         {
-                            texPixel = Border;
+                            texPixel = tex.GetPixel(Mathf.FloorToInt(tex.width / texture.width * y), Mathf.FloorToInt(tex.height / texture.height * x));
+                            texPixel = texPixel * (color * intensity);
                         }
+                        //Color
                         else
                         {
-                            //Texture
-                            if (tex != null)
-                            {
-                                texPixel = tex.GetPixel(Mathf.FloorToInt(tex.width / texture.width * y), Mathf.FloorToInt(tex.height / texture.height * x));
-                                texPixel = texPixel * (color * intensity);
-                            }
-                            //Color
-                            else
-                            {
-                                texPixel = (color * intensity);
-                            }
+                            texPixel = color * intensity;
                         }
-
-                        //Write to pixel
-                        pixels[x * texture.width + y] = texPixel;
                     }
+
+                    //Write to pixel
+                    pixels[x * texture.width + y] = texPixel;
                 }
 
                 texture.SetPixels(pixels);
@@ -919,40 +920,38 @@ namespace LlockhamIndustries.Decals
         {
             if (marked)
             {
-                Texture2D tex = LlockhamEditorUtility.TextureFromProperty(Texture);
-                Color color = Color.colorValue;
+                var tex = LlockhamEditorUtility.TextureFromProperty(Texture);
+                var color = Color.colorValue;
 
-                Color[] pixels = new Color[texture.width * texture.height];
-                for (int x = 0; x < texture.width; x++)
+                var pixels = new Color[texture.width * texture.height];
+                for (var x = 0; x < texture.width; x++)
+                for (var y = 0; y < texture.height; y++)
                 {
-                    for (int y = 0; y < texture.height; y++)
-                    {
-                        //Determine our pixel color
-                        Color texPixel;
+                    //Determine our pixel color
+                    Color texPixel;
 
-                        //Border
-                        if (x < BorderWidth || x > texture.width - BorderWidth || y < BorderWidth || y > texture.height - BorderWidth)
+                    //Border
+                    if (x < BorderWidth || x > texture.width - BorderWidth || y < BorderWidth || y > texture.height - BorderWidth)
+                    {
+                        texPixel = Border;
+                    }
+                    else
+                    {
+                        //Texture
+                        if (tex != null)
                         {
-                            texPixel = Border;
+                            texPixel = tex.GetPixel(Mathf.FloorToInt(tex.width / texture.width * y), Mathf.FloorToInt(tex.height / texture.height * x));
+                            texPixel = texPixel * color;
                         }
+                        //Color
                         else
                         {
-                            //Texture
-                            if (tex != null)
-                            {
-                                texPixel = tex.GetPixel(Mathf.FloorToInt(tex.width / texture.width * y), Mathf.FloorToInt(tex.height / texture.height * x));
-                                texPixel = texPixel * color;
-                            }
-                            //Color
-                            else
-                            {
-                                texPixel = color;
-                            }
+                            texPixel = color;
                         }
-
-                        //Write to pixel
-                        pixels[x * texture.width + y] = texPixel;
                     }
+
+                    //Write to pixel
+                    pixels[x * texture.width + y] = texPixel;
                 }
 
                 texture.SetPixels(pixels);
@@ -969,59 +968,57 @@ namespace LlockhamIndustries.Decals
         {
             if (marked)
             {
-                Texture2D tex = LlockhamEditorUtility.TextureFromProperty(Texture);
-                float mul = Multiplier.floatValue;
+                var tex = LlockhamEditorUtility.TextureFromProperty(Texture);
+                var mul = Multiplier.floatValue;
 
-                Color[] pixels = new Color[texture.width * texture.height];
-                for (int x = 0; x < texture.width; x++)
+                var pixels = new Color[texture.width * texture.height];
+                for (var x = 0; x < texture.width; x++)
+                for (var y = 0; y < texture.height; y++)
                 {
-                    for (int y = 0; y < texture.height; y++)
-                    {
-                        //Determine our pixel color
-                        Color texPixel;
+                    //Determine our pixel color
+                    Color texPixel;
 
-                        //Border
-                        if (x < BorderWidth || x > texture.width - BorderWidth || y < BorderWidth || y > texture.height - BorderWidth)
+                    //Border
+                    if (x < BorderWidth || x > texture.width - BorderWidth || y < BorderWidth || y > texture.height - BorderWidth)
+                    {
+                        texPixel = Border;
+                    }
+                    else
+                    {
+                        float metallicity = 0;
+
+                        //Texture
+                        if (tex != null)
                         {
-                            texPixel = Border;
+                            switch (Channel)
+                            {
+                                case TextureChannel.r:
+                                    metallicity = tex.GetPixel(Mathf.FloorToInt(tex.width / texture.width * y), Mathf.FloorToInt(tex.height / texture.height * x)).r;
+                                    break;
+                                case TextureChannel.g:
+                                    metallicity = tex.GetPixel(Mathf.FloorToInt(tex.width / texture.width * y), Mathf.FloorToInt(tex.height / texture.height * x)).g;
+                                    break;
+                                case TextureChannel.b:
+                                    metallicity = tex.GetPixel(Mathf.FloorToInt(tex.width / texture.width * y), Mathf.FloorToInt(tex.height / texture.height * x)).b;
+                                    break;
+                                case TextureChannel.a:
+                                    metallicity = tex.GetPixel(Mathf.FloorToInt(tex.width / texture.width * y), Mathf.FloorToInt(tex.height / texture.height * x)).a;
+                                    break;
+                            }
+                                
+                            metallicity = metallicity * mul;
                         }
+                        //Color
                         else
                         {
-                            float metallicity = 0;
-
-                            //Texture
-                            if (tex != null)
-                            {
-                                switch (Channel)
-                                {
-                                    case TextureChannel.r:
-                                        metallicity = tex.GetPixel(Mathf.FloorToInt(tex.width / texture.width * y), Mathf.FloorToInt(tex.height / texture.height * x)).r;
-                                        break;
-                                    case TextureChannel.g:
-                                        metallicity = tex.GetPixel(Mathf.FloorToInt(tex.width / texture.width * y), Mathf.FloorToInt(tex.height / texture.height * x)).g;
-                                        break;
-                                    case TextureChannel.b:
-                                        metallicity = tex.GetPixel(Mathf.FloorToInt(tex.width / texture.width * y), Mathf.FloorToInt(tex.height / texture.height * x)).b;
-                                        break;
-                                    case TextureChannel.a:
-                                        metallicity = tex.GetPixel(Mathf.FloorToInt(tex.width / texture.width * y), Mathf.FloorToInt(tex.height / texture.height * x)).a;
-                                        break;
-                                }
-                                
-                                metallicity = metallicity * mul;
-                            }
-                            //Color
-                            else
-                            {
-                                metallicity = mul;
-                            }
-                            
-                            texPixel = Color.Lerp(Color.black, Color.white, metallicity);
+                            metallicity = mul;
                         }
-
-                        //Write to pixel
-                        pixels[x * texture.width + y] = texPixel;
+                            
+                        texPixel = Color.Lerp(Color.black, Color.white, metallicity);
                     }
+
+                    //Write to pixel
+                    pixels[x * texture.width + y] = texPixel;
                 }
 
                 texture.SetPixels(pixels);
@@ -1032,5 +1029,5 @@ namespace LlockhamIndustries.Decals
             }
         }
     }
-    internal enum TextureChannel { r, g, b, a };
+    internal enum TextureChannel { r, g, b, a }
 }

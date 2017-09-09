@@ -1,23 +1,25 @@
-﻿//Copyright © Darwin Willers 2017
+﻿#region
 
 using UnityEngine;
 
+#endregion
+
 public class GroundTile : MonoBehaviour
 {
+    public bool unwalkable;
 
     public Vector3 Position { get; private set; }
-    public bool Unwalkable;
     public bool Walkable { get; private set; }
-    
+
     public Transform HostingObject { get; private set; }
 
 
     private void Awake()
     {
         Position = transform.position;
-        Walkable = !Unwalkable;
+        Walkable = !unwalkable;
     }
-    
+
     private void Start()
     {
       GridManager.Instance.RegisterTile(this);
@@ -26,9 +28,11 @@ public class GroundTile : MonoBehaviour
     public void EnterTile(Transform obj)
     {
         if (HostingObject != null)
+        {
             Debug.LogError("COULDNT ENTER TILE: " + obj.name + " couldnt enter tile " +
                            name + " at " + transform.position + "cause tile already hosting "
                            + HostingObject.name);
+        }
         else
         {
             HostingObject = obj;
@@ -39,9 +43,11 @@ public class GroundTile : MonoBehaviour
     public void LeaveTile(Transform obj)
     {
         if (obj != HostingObject)
+        {
             Debug.LogError("COULDNT LEAVE TILE: Object " + obj.name +
                            " is not the hosted Object at tile" + name + " at "
                            + transform.position + ". Hosted object is " + HostingObject.name);
+        }
         else
         {
             HostingObject = null;
@@ -53,9 +59,11 @@ public class GroundTile : MonoBehaviour
     {
         Debug.Log("Trigger entered");
         if (HostingObject != null)
+        {
             Debug.LogError("COULDNT ENTER TILE: " + other.name + " couldnt enter tile " +
                            name + " at " + transform.position + "cause tile already hosting "
                            + HostingObject.name);
+        }
         else
         {
             HostingObject = other.transform;
@@ -67,9 +75,11 @@ public class GroundTile : MonoBehaviour
     {
         Debug.Log("Trigger exit");
         if (other.transform != HostingObject)
+        {
             Debug.LogError("COULDNT LEAVE TILE: Object " + other.name +
                            " is not the hosted Object at tile" + name + " at "
                            + transform.position + ". Hosted object is " + HostingObject.name);
+        }
         else
         {
             HostingObject = null;

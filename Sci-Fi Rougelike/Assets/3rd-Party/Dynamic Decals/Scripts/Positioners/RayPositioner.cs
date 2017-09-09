@@ -1,5 +1,8 @@
-﻿using UnityEngine;
-using System.Collections;
+﻿#region
+
+using UnityEngine;
+
+#endregion
 
 namespace LlockhamIndustries.Decals
 {
@@ -9,37 +12,41 @@ namespace LlockhamIndustries.Decals
     public class RayPositioner : Positioner
     {
         /**
-        * The transform that acts as the base of the raycast. If null will this objects transform
-        */
-        public Transform rayTransform;
-        /**
-        * A position offset applied to the base of the transform to get the starting position of the ray.
-        */
-        public Vector3 positionOffset;
-        /**
-        * A rotation offset applied to the transforms forward direction to get the direction of the ray.
-        */
-        public Vector3 rotationOffset;
-        /**
         * The cast length of the ray.
         */
         public float castLength = 100;
 
-        void LateUpdate()
+        /**
+        * A position offset applied to the base of the transform to get the starting position of the ray.
+        */
+        public Vector3 positionOffset;
+
+        /**
+        * The transform that acts as the base of the raycast. If null will this objects transform
+        */
+        public Transform rayTransform;
+
+        /**
+        * A rotation offset applied to the transforms forward direction to get the direction of the ray.
+        */
+        public Vector3 rotationOffset;
+
+        private void LateUpdate()
         {
-            Transform origin = (rayTransform != null) ? rayTransform : transform;
-            Quaternion Rotation = origin.rotation * Quaternion.Euler(rotationOffset);
-            Vector3 Position = origin.position + (Rotation * positionOffset);
+            var origin = rayTransform != null ? rayTransform : transform;
+            var Rotation = origin.rotation * Quaternion.Euler(rotationOffset);
+            var Position = origin.position + Rotation * positionOffset;
 
             //Reproject every late update
-            Ray ray = new Ray(Position, Rotation * Vector3.forward);
+            var ray = new Ray(Position, Rotation * Vector3.forward);
             Reproject(ray, castLength, Rotation * Vector3.up);
         }
-        void OnDrawGizmosSelected()
+
+        private void OnDrawGizmosSelected()
         {
-            Transform origin = (rayTransform != null) ? rayTransform : transform;
-            Quaternion Rotation = origin.rotation * Quaternion.Euler(rotationOffset);
-            Vector3 Position = origin.position + (Rotation * positionOffset);
+            var origin = rayTransform != null ? rayTransform : transform;
+            var Rotation = origin.rotation * Quaternion.Euler(rotationOffset);
+            var Position = origin.position + Rotation * positionOffset;
 
             Gizmos.color = Color.black;
             Gizmos.DrawRay(Position, Rotation * Vector3.up * 0.4f);

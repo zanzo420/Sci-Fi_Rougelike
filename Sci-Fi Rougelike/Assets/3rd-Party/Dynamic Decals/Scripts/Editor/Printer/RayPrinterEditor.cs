@@ -1,7 +1,9 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
+﻿#region
+
 using UnityEditor;
+using UnityEngine;
+
+#endregion
 
 namespace LlockhamIndustries.Decals
 {
@@ -9,7 +11,7 @@ namespace LlockhamIndustries.Decals
     [CustomEditor(typeof(RayPrinter))]
     public class RayPrinterEditor : PrinterEditor
     {
-        SerializedProperty layers;
+        private SerializedProperty layers;
 
         public override void OnEnable()
         {
@@ -34,15 +36,14 @@ namespace LlockhamIndustries.Decals
             //Apply modified properties
             serializedObject.ApplyModifiedProperties();
         }
+
         private void LayersGUI()
         {
             if (prints.arraySize > 1 && printMethod.enumValueIndex == 2)
             {
-                int finalLayers = 0;
+                var finalLayers = 0;
                 foreach (SerializedProperty layermask in printLayers)
-                {
-                    finalLayers = (finalLayers | layermask.intValue);
-                }
+                    finalLayers = finalLayers | layermask.intValue;
                 layers.intValue = finalLayers;
             }
             else

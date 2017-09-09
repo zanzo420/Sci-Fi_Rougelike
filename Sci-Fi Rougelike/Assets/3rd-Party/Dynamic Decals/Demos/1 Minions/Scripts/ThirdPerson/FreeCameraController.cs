@@ -1,24 +1,29 @@
-﻿using System.Collections;
-using System.Collections.Generic;
+﻿#region
+
 using UnityEngine;
+
+#endregion
 
 namespace LlockhamIndustries.Misc
 {
     public class FreeCameraController : GenericCameraController
     {
-        [Header("Movement")]
-        public float movementSpeed = 0.1f;
-        public float movementThreshold = 0.1f;
+        private Vector3 cameraVelocity;
+        public float maxX = 10;
+        public float maxZ = 10;
 
         [Header("Limits")]
         public float minX = -10;
-        public float maxX = 10;
+
         public float minZ = -10;
-        public float maxZ = 10;
 
         //Backing fields
         private Vector2 mousePosition;
-        private Vector3 cameraVelocity;
+
+        [Header("Movement")]
+        public float movementSpeed = 0.1f;
+
+        public float movementThreshold = 0.1f;
 
         //Generic methods
         private void Update()
@@ -26,6 +31,7 @@ namespace LlockhamIndustries.Misc
             EdgeScrollInput();
             RotationZoomInput();
         }
+
         private void LateUpdate()
         {
             ApplyEdgeScroll();
@@ -38,10 +44,11 @@ namespace LlockhamIndustries.Misc
             //Mouse position
             mousePosition = new Vector2(Input.mousePosition.x / Screen.width, Input.mousePosition.y / Screen.height);
         }
+
         private void ApplyEdgeScroll()
         {
             //Calculate camera movement
-            Vector3 movement = Vector3.zero;
+            var movement = Vector3.zero;
 
             if (mousePosition.x < movementThreshold) movement -= Right * (movementThreshold - mousePosition.x) / movementThreshold * movementSpeed;
             if (1 - mousePosition.x < movementThreshold) movement += Right * (movementThreshold - (1 - mousePosition.x)) / movementThreshold * movementSpeed;
@@ -52,7 +59,7 @@ namespace LlockhamIndustries.Misc
             movement *= zoom / maxZoom;
 
             //Calculate goal position
-            Vector3 goalPosition = transform.position + movement;
+            var goalPosition = transform.position + movement;
 
             //Clamp goal position
             goalPosition.x = Mathf.Clamp(goalPosition.x, minX, maxX);

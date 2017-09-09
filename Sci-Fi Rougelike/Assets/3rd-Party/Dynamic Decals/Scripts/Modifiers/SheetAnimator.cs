@@ -1,6 +1,8 @@
-﻿using System.Collections;
-using System.Collections.Generic;
+﻿#region
+
 using UnityEngine;
+
+#endregion
 
 namespace LlockhamIndustries.Decals
 {
@@ -19,16 +21,27 @@ namespace LlockhamIndustries.Decals
         public int collumns;
 
         /**
+        * Destroy the projection when the animator has finished its first loop.
+        */
+        [Tooltip("Destroy the projection when the animator has finished its first loop.")]
+        public bool destroyOnComplete;
+
+        /**
+        * Sample frames from the bottom instead of the top.
+        */
+        [Tooltip("Sample frames from the bottom instead of the top.")]
+        public bool invertY;
+
+        private bool paused;
+
+        //Backing fields
+        private ProjectionRenderer projection;
+
+        /**
         * The number of rows in the sprite sheet being sampled.
         */
         [Tooltip("The number of rows in the sprite sheet being sampled.")]
         public int rows;
-
-        /**
-        * The playback speed, in frames per second.
-        */
-        [Tooltip("The playback speed, in frames per second.")]
-        public float speed;
 
         [Header("Advanced")]
         /**
@@ -44,58 +57,50 @@ namespace LlockhamIndustries.Decals
         public int skipLast;
 
         /**
-        * Sample frames from the bottom instead of the top.
+        * The playback speed, in frames per second.
         */
-        [Tooltip("Sample frames from the bottom instead of the top.")]
-        public bool invertY;
+        [Tooltip("The playback speed, in frames per second.")]
+        public float speed;
 
-        /**
-        * Destroy the projection when the animator has finished its first loop.
-        */
-        [Tooltip("Destroy the projection when the animator has finished its first loop.")]
-        public bool destroyOnComplete;
-
-        //Backing fields
-        private ProjectionRenderer projection;
-
-        private float time = 0;
-        private bool paused;
+        private float time;
 
         private void Awake()
         {
             //Grab our projection
             projection = GetComponent<ProjectionRenderer>();
         }
+
         private void Update()
         {
             //Calculate count
-            int count = (collumns * rows) - (skipFirst + skipLast);
+            var count = collumns * rows - (skipFirst + skipLast);
 
             //Increment time
             if (!paused) time += Time.deltaTime * speed;
             if (time > count)
-            {
                 if (destroyOnComplete)
                 {
                     projection.Destroy();
                     return;
                 }
-                else time -= count;
-            }
-                 
+                else
+                {
+                    time -= count;
+                }
+
             //Calculate current frame
-            int frame = skipFirst + Mathf.FloorToInt(time);
+            var frame = skipFirst + Mathf.FloorToInt(time);
 
             //Calculate frame size
-            Vector2 size = new Vector2(1 / collumns, 1 / rows);
+            var size = new Vector2(1 / collumns, 1 / rows);
 
             //Calculate current row & collumn
-            int row = frame / collumns;
-            int collumn = frame % collumns;
+            var row = frame / collumns;
+            var collumn = frame % collumns;
 
             //Calculate offset
-            float x = size.x * collumn;
-            float y = size.y * row;
+            var x = size.x * collumn;
+            var y = size.y * row;
             if (!invertY) y = 1 - size.y - y;
 
             //Set tiling
@@ -116,6 +121,7 @@ namespace LlockhamIndustries.Decals
         {
             paused = false;
         }
+
         /**
         * Pauses the sprite animation. Calling Play() will begin the animation again from the current position.
         */
@@ -123,6 +129,7 @@ namespace LlockhamIndustries.Decals
         {
             paused = true;
         }
+
         /**
         * Stops the sprite animation. Calling Play() will begin the animation from the begining.
         */

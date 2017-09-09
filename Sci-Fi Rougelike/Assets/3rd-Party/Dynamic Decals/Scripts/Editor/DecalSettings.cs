@@ -1,32 +1,32 @@
-﻿using UnityEngine;
-using UnityEditor;
-using System.Collections;
-using System.Collections.Generic;
+﻿#region
 
+using UnityEditor;
 using UnityEditorInternal;
-using LlockhamIndustries.ExtensionMethods;
+using UnityEngine;
+
+#endregion
 
 namespace LlockhamIndustries.Decals
 {
     public class DecalSettings : EditorWindow
     {
+        //Cached variables
+        private readonly string assetPath = "Assets/Dynamic Decals/Resources/Settings.asset";
+
+        //Quality Settings Tab
+        private int qualitySetting;
+
+        //ScrollView
+        private Vector2 scrollPosition;
+
         [MenuItem("Window/Decals/Setting")]
         private static void Init()
         {
-            DecalSettings window = (DecalSettings)GetWindow(typeof(DecalSettings));
+            var window = (DecalSettings)GetWindow(typeof(DecalSettings));
             window.titleContent = new GUIContent("Decal Settings");
             window.minSize = new Vector2(300, 180);
             window.Show();
         }
-
-        //Cached variables
-        private string assetPath = "Assets/Dynamic Decals/Resources/Settings.asset";
-
-        //Quality Settings Tab
-        private int qualitySetting = 0;
-
-        //ScrollView
-        private Vector2 scrollPosition;
 
         //Generic methods
         private void OnEnable()
@@ -34,6 +34,7 @@ namespace LlockhamIndustries.Decals
             //Register undo/redo callback
             Undo.undoRedoPerformed += UndoRedo;
         }
+
         private void OnDisable()
         {
             //De-register undo/redo callback
@@ -43,24 +44,24 @@ namespace LlockhamIndustries.Decals
         private void OnGUI()
         {
             //Grab our settings
-            DynamicDecalSettings settings = DynamicDecals.System.Settings;
+            var settings = DynamicDecals.System.Settings;
 
             //Calculate required rect height
             float settingsHeight = 80;
             float maskHeight = 120;
-            float debugHeight = (Application.isPlaying) ? 100 : 80;
-            float totalHeight = LlockhamEditorUtility.TabHeight * (settings.pools.Length + 4) + settingsHeight + maskHeight + debugHeight + 54;
+            float debugHeight = Application.isPlaying ? 100 : 80;
+            var totalHeight = LlockhamEditorUtility.TabHeight * (settings.pools.Length + 4) + settingsHeight + maskHeight + debugHeight + 54;
 
             //Begin change check & scrollView
             EditorGUI.BeginChangeCheck();
-            Rect scrollRect = new Rect(0, 0, Screen.width - 20, totalHeight);
+            var scrollRect = new Rect(0, 0, Screen.width - 20, totalHeight);
             scrollPosition = GUI.BeginScrollView(new Rect(10, 10, Screen.width - 20, Screen.height - 20), scrollPosition, scrollRect, GUIStyle.none, GUIStyle.none);
 
             //General settings
             GeneralSettings(new Rect(0, 0, scrollRect.width, settingsHeight), settings);
 
             //Mask settings
-            MaskSettings(new Rect(0, settingsHeight + 44 + (LlockhamEditorUtility.TabHeight * (settings.pools.Length + 4)), scrollRect.width, maskHeight), settings);
+            MaskSettings(new Rect(0, settingsHeight + 44 + LlockhamEditorUtility.TabHeight * (settings.pools.Length + 4), scrollRect.width, maskHeight), settings);
 
             //Pool settings
             PoolHeader(new Rect(0, settingsHeight + 10, scrollRect.width, 24), settings);
@@ -68,19 +69,17 @@ namespace LlockhamIndustries.Decals
             PoolSettings(new Rect(0, settingsHeight + 34 + LlockhamEditorUtility.TabHeight, scrollRect.width, LlockhamEditorUtility.TabHeight * (settings.pools.Length + 3)), settings);
 
             //Debug settings
-            DebugSettings(new Rect(0, settingsHeight + 54 + (LlockhamEditorUtility.TabHeight * (settings.pools.Length + 4)) + maskHeight, scrollRect.width, debugHeight));
+            DebugSettings(new Rect(0, settingsHeight + 54 + LlockhamEditorUtility.TabHeight * (settings.pools.Length + 4) + maskHeight, scrollRect.width, debugHeight));
 
             //End change check & scrollView
             GUI.EndScrollView();
             if (EditorGUI.EndChangeCheck())
-            {
-                //If the asset already exists, mark it to be saved
                 if (Resources.Load<DynamicDecalSettings>("Settings") != null) EditorUtility.SetDirty(settings);
 
                 //If the asset doen't exist, create it
                 else AssetDatabase.CreateAsset(settings, assetPath);
-            }
         }
+
         private void OnInspectorUpdate()
         {
             Repaint();
@@ -89,7 +88,7 @@ namespace LlockhamIndustries.Decals
         private void UndoRedo()
         {
             //Grab our settings
-            DynamicDecalSettings settings = DynamicDecals.System.Settings;
+            var settings = DynamicDecals.System.Settings;
 
             //Recalculate passes
             settings.CalculatePasses();
@@ -111,7 +110,7 @@ namespace LlockhamIndustries.Decals
             EditorGUI.LabelField(new Rect(8, 4, Area.width - 32, 16), "Settings", EditorStyles.boldLabel);
 
             //Reset
-            Rect Reset = new Rect(Area.width - 20, 6, 12, 12);
+            var Reset = new Rect(Area.width - 20, 6, 12, 12);
             if (Event.current.type == EventType.mouseDown && Event.current.button == 0 && Reset.Contains(Event.current.mousePosition))
             {
                 Undo.RecordObject(Settings, "Reset Settings");
@@ -131,7 +130,7 @@ namespace LlockhamIndustries.Decals
             EditorGUILayout.BeginHorizontal();
             EditorGUILayout.LabelField(new GUIContent("Shader Replacement", "Use SinglePass whenever possible, VR is only required for VR and Mobile for older mobile devices (Shader Model 2.0)."), GUILayout.Width(150));
             GUILayout.FlexibleSpace();
-            ShaderReplacement shaderReplacement = (ShaderReplacement)EditorGUILayout.EnumPopup(new GUIContent(""), Settings.shaderReplacement, GUILayout.Width(Area.width - 180));
+            var shaderReplacement = (ShaderReplacement)EditorGUILayout.EnumPopup(new GUIContent(""), Settings.shaderReplacement, GUILayout.Width(Area.width - 180));
             EditorGUILayout.EndHorizontal();
 
             if (EditorGUI.EndChangeCheck())
@@ -148,7 +147,7 @@ namespace LlockhamIndustries.Decals
             EditorGUILayout.BeginHorizontal();
             EditorGUILayout.LabelField(new GUIContent("Force Forward Rendering", "Force all projections to render in a forward renderloop with the forward shaders. This is useful for keeping all projections in the same priority que (Deferred projections renderer before Forward projections otherwise)."), GUILayout.Width(200));
             GUILayout.FlexibleSpace();
-            bool forceForward = EditorGUILayout.Toggle(new GUIContent(""), Settings.forceForward, GUILayout.Width(14));
+            var forceForward = EditorGUILayout.Toggle(new GUIContent(""), Settings.forceForward, GUILayout.Width(14));
             EditorGUILayout.EndHorizontal();
 
             if (EditorGUI.EndChangeCheck())
@@ -166,6 +165,7 @@ namespace LlockhamIndustries.Decals
             GUILayout.EndArea();
             GUI.EndGroup();
         }
+
         private void MaskSettings(Rect Area, DynamicDecalSettings Settings)
         {
             GUI.BeginGroup(Area);
@@ -175,7 +175,7 @@ namespace LlockhamIndustries.Decals
             EditorGUI.LabelField(new Rect(8, 4, Area.width - 32, 16), "Masking", EditorStyles.boldLabel);
 
             //Reset
-            Rect Reset = new Rect(Area.width - 20, 6, 12, 12);
+            var Reset = new Rect(Area.width - 20, 6, 12, 12);
             if (Event.current.type == EventType.mouseDown && Event.current.button == 0 && Reset.Contains(Event.current.mousePosition))
             {
                 Undo.RecordObject(Settings, "Reset Masking");
@@ -191,12 +191,12 @@ namespace LlockhamIndustries.Decals
             GUILayout.BeginArea(new Rect(4, 32, Area.width - 20, Area.height - 32));
 
             //Generate layer options
-            for (int i = 0; i < Settings.Layers.Length; i++)
+            for (var i = 0; i < Settings.Layers.Length; i++)
             {
                 EditorGUI.BeginChangeCheck();
 
                 EditorGUILayout.BeginHorizontal();
-                string layerName = EditorGUILayout.TextField(new GUIContent(""), Settings.Layers[i].name, GUILayout.Width(Area.width - 200));
+                var layerName = EditorGUILayout.TextField(new GUIContent(""), Settings.Layers[i].name, GUILayout.Width(Area.width - 200));
                 GUILayout.FlexibleSpace();
                 LayerMask layerMask = EditorGUILayout.MaskField(new GUIContent(""), InternalEditorUtility.LayerMaskToConcatenatedLayersMask(Settings.Layers[i].layers), InternalEditorUtility.layers, GUILayout.Width(160));
                 EditorGUILayout.EndHorizontal();
@@ -219,6 +219,7 @@ namespace LlockhamIndustries.Decals
             GUILayout.EndArea();
             GUI.EndGroup();
         }
+
         private void DebugSettings(Rect Area)
         {
             if (Application.isPlaying && DynamicDecals.Initialized)
@@ -246,7 +247,7 @@ namespace LlockhamIndustries.Decals
                 EditorGUILayout.BeginHorizontal();
                 EditorGUILayout.LabelField(new GUIContent("Enabled", "Toggles the system on and off."), GUILayout.Width(150));
                 GUILayout.FlexibleSpace();
-                bool enabled = EditorGUILayout.Toggle(new GUIContent(""), DynamicDecals.System.isActiveAndEnabled, GUILayout.Width(Area.width - 180));
+                var enabled = EditorGUILayout.Toggle(new GUIContent(""), DynamicDecals.System.isActiveAndEnabled, GUILayout.Width(Area.width - 180));
                 EditorGUILayout.EndHorizontal();
 
                 if (EditorGUI.EndChangeCheck())
@@ -263,7 +264,7 @@ namespace LlockhamIndustries.Decals
                 EditorGUILayout.BeginHorizontal();
                 EditorGUILayout.LabelField(new GUIContent("Shader Replacement", "Toggles the systems requisite shader replacement on and off."), GUILayout.Width(150));
                 GUILayout.FlexibleSpace();
-                bool shaderReplacement = EditorGUILayout.Toggle(new GUIContent(""), DynamicDecals.System.shaderReplacement, GUILayout.Width(Area.width - 180));
+                var shaderReplacement = EditorGUILayout.Toggle(new GUIContent(""), DynamicDecals.System.shaderReplacement, GUILayout.Width(Area.width - 180));
                 EditorGUILayout.EndHorizontal();
 
                 if (EditorGUI.EndChangeCheck())
@@ -289,7 +290,7 @@ namespace LlockhamIndustries.Decals
             EditorGUI.LabelField(new Rect(8, 4, Area.width - 32, 16), "Pools", EditorStyles.boldLabel);
 
             //Reset
-            Rect Reset = new Rect(Area.width - 20, 6, 12, 12);
+            var Reset = new Rect(Area.width - 20, 6, 12, 12);
             if (Event.current.type == EventType.mouseDown && Event.current.button == 0 && Reset.Contains(Event.current.mousePosition))
             {
                 Undo.RecordObject(Settings, "Reset Pools");
@@ -300,20 +301,21 @@ namespace LlockhamIndustries.Decals
 
             GUI.EndGroup();
         }
+
         private void QualityTabs(Rect Area)
         {
             EditorGUI.DrawRect(Area, LlockhamEditorUtility.MidgroundColor);
             GUI.BeginGroup(Area, new GUIContent(""));
 
             //Quality Tabs
-            int tabCount = QualitySettings.names.Length;
-            float tabWidth = Area.width / tabCount;
+            var tabCount = QualitySettings.names.Length;
+            var tabWidth = Area.width / tabCount;
 
             EditorGUI.DrawRect(new Rect(0, 0, Area.width, LlockhamEditorUtility.TabHeight), LlockhamEditorUtility.BackgroundColor);
-            for (int i = 0; i < tabCount; i++)
+            for (var i = 0; i < tabCount; i++)
             {
                 //Tab Logic
-                Rect Tab = new Rect((i * tabWidth), 2, tabWidth, LlockhamEditorUtility.TabHeight - 2);
+                var Tab = new Rect(i * tabWidth, 2, tabWidth, LlockhamEditorUtility.TabHeight - 2);
                 if (Event.current.type == EventType.MouseDown && Event.current.button == 0 && Tab.Contains(Event.current.mousePosition))
                 {
                     //Switch to selected quality setting
@@ -329,18 +331,19 @@ namespace LlockhamIndustries.Decals
                 //Draw Tab
                 if (i == qualitySetting) EditorGUI.DrawRect(Tab, LlockhamEditorUtility.HeaderColor);
                 else EditorGUI.DrawRect(new Rect(Tab.x + 1, Tab.y + 2, Tab.width - 2, Tab.height - 2), LlockhamEditorUtility.MidgroundColor);
-                GUI.Label(new Rect((i * tabWidth), 1, tabWidth, LlockhamEditorUtility.TabHeight - 1), new GUIContent(QualitySettings.names[i]), LlockhamEditorUtility.MiniTabLabel);
+                GUI.Label(new Rect(i * tabWidth, 1, tabWidth, LlockhamEditorUtility.TabHeight - 1), new GUIContent(QualitySettings.names[i]), LlockhamEditorUtility.MiniTabLabel);
             }
 
             GUI.EndGroup();
         }
+
         private void PoolSettings(Rect Area, DynamicDecalSettings Settings)
         {
             EditorGUI.DrawRect(Area, LlockhamEditorUtility.MidgroundColor);
             GUI.BeginGroup(Area, new GUIContent(""));
 
             //Collumn width
-            float poolCollumnWidth = Area.width / 3;
+            var poolCollumnWidth = Area.width / 3;
 
             //Button Dimensions
             float buttonHeight = 16;
@@ -353,15 +356,15 @@ namespace LlockhamIndustries.Decals
             GUI.Label(new Rect(4 + poolCollumnWidth, 2, poolCollumnWidth, LlockhamEditorUtility.TabHeight), "Limit", EditorStyles.miniBoldLabel);
 
             //Pool Content
-            for (int i = 0; i < Settings.pools.Length; i++)
+            for (var i = 0; i < Settings.pools.Length; i++)
             {
-                Rect poolRect = new Rect(0, LlockhamEditorUtility.TabHeight * (1 + i), Area.width, LlockhamEditorUtility.TabHeight);
+                var poolRect = new Rect(0, LlockhamEditorUtility.TabHeight * (1 + i), Area.width, LlockhamEditorUtility.TabHeight);
                 PoolItem(poolRect, Settings, Settings.pools[i], i);
             }
 
             //New Pool
-            EditorGUI.DrawRect(new Rect(0, LlockhamEditorUtility.TabHeight * (1 + Settings.pools.Length), Area.width, LlockhamEditorUtility.TabHeight), (Settings.pools.Length % 2 != 0) ? LlockhamEditorUtility.MidgroundColor : LlockhamEditorUtility.ForegroundColor);
-            if (GUI.Button(new Rect((Area.width - buttonMajorWidth) / 2, LlockhamEditorUtility.TabHeight * (1 + Settings.pools.Length) + ((LlockhamEditorUtility.TabHeight - buttonHeight) / 2), buttonMajorWidth, buttonHeight), "+"))
+            EditorGUI.DrawRect(new Rect(0, LlockhamEditorUtility.TabHeight * (1 + Settings.pools.Length), Area.width, LlockhamEditorUtility.TabHeight), Settings.pools.Length % 2 != 0 ? LlockhamEditorUtility.MidgroundColor : LlockhamEditorUtility.ForegroundColor);
+            if (GUI.Button(new Rect((Area.width - buttonMajorWidth) / 2, LlockhamEditorUtility.TabHeight * (1 + Settings.pools.Length) + (LlockhamEditorUtility.TabHeight - buttonHeight) / 2, buttonMajorWidth, buttonHeight), "+"))
             {
                 //Record state for undo
                 Undo.RecordObject(Settings, "Add Pool");
@@ -376,18 +379,19 @@ namespace LlockhamIndustries.Decals
 
             //Calculate total
             float total = 0;
-            for (int i = 0; i < Settings.pools.Length; i++) total += Settings.pools[i].limits[qualitySetting];
+            for (var i = 0; i < Settings.pools.Length; i++) total += Settings.pools[i].limits[qualitySetting];
             GUI.Label(new Rect(4 + poolCollumnWidth, LlockhamEditorUtility.TabHeight * (2 + Settings.pools.Length), poolCollumnWidth, LlockhamEditorUtility.TabHeight), total.ToString(), EditorStyles.miniBoldLabel);
 
             GUI.EndGroup();
         }
+
         private void PoolItem(Rect Area, DynamicDecalSettings Settings, PoolInstance Instance, int Index)
         {
-            float collumnWidth = Area.width / 3;
+            var collumnWidth = Area.width / 3;
             float buttonSize = 16;
 
             //Background
-            EditorGUI.DrawRect(Area, (Index % 2 != 0) ? LlockhamEditorUtility.MidgroundColor : LlockhamEditorUtility.ForegroundColor);
+            EditorGUI.DrawRect(Area, Index % 2 != 0 ? LlockhamEditorUtility.MidgroundColor : LlockhamEditorUtility.ForegroundColor);
             GUI.BeginGroup(Area);
 
             //Title
@@ -399,7 +403,7 @@ namespace LlockhamIndustries.Decals
             else
             {
                 EditorGUI.BeginChangeCheck();
-                string title = EditorGUI.TextField(new Rect(4, 2, collumnWidth, 16), Instance.title, LlockhamEditorUtility.MiniLabel);
+                var title = EditorGUI.TextField(new Rect(4, 2, collumnWidth, 16), Instance.title, LlockhamEditorUtility.MiniLabel);
                 if (EditorGUI.EndChangeCheck())
                 {
                     //Record state for undo
@@ -412,7 +416,7 @@ namespace LlockhamIndustries.Decals
 
             //Limit
             EditorGUI.BeginChangeCheck();
-            int limit = EditorGUI.IntField(new Rect(4 + collumnWidth, 2, collumnWidth, 16), Instance.limits[qualitySetting]);
+            var limit = EditorGUI.IntField(new Rect(4 + collumnWidth, 2, collumnWidth, 16), Instance.limits[qualitySetting]);
             if (EditorGUI.EndChangeCheck())
             {
                 //Record state for undo
@@ -423,11 +427,11 @@ namespace LlockhamIndustries.Decals
             }
 
             //Utility Buttons
-            Rect utilityRect = new Rect(Area.width - (buttonSize * 3 + 16) - 12, 2, (buttonSize * 3 + 16), 16);
+            var utilityRect = new Rect(Area.width - (buttonSize * 3 + 16) - 12, 2, buttonSize * 3 + 16, 16);
             GUI.BeginGroup(utilityRect);
 
             //Cache GUI.enabled
-            bool GUIEnabled = GUI.enabled;
+            var GUIEnabled = GUI.enabled;
 
             //Up
             if (Index < 2) GUI.enabled = false;
@@ -476,50 +480,48 @@ namespace LlockhamIndustries.Decals
         private void NewPool(DynamicDecalSettings Settings)
         {
             //Cache old pool
-            PoolInstance[] oldPool = Settings.pools;
+            var oldPool = Settings.pools;
 
             //Extend array
             Settings.pools = new PoolInstance[oldPool.Length + 1];
 
             //Add back our old pools
-            for (int i = 0; i < oldPool.Length; i++)
-            {
+            for (var i = 0; i < oldPool.Length; i++)
                 Settings.pools[i] = oldPool[i];
-            }
 
             //Add our new pool
             Settings.pools[Settings.pools.Length - 1] = new PoolInstance("New", oldPool);
         }
+
         private void RemoveAt(DynamicDecalSettings Settings, int Index)
         {
             //Make sure index is valid
             if (Index > 0 && Index < Settings.pools.Length)
             {
                 //Cache old pool
-                PoolInstance[] oldPool = Settings.pools;
+                var oldPool = Settings.pools;
 
                 //Reduce array size
                 Settings.pools = new PoolInstance[oldPool.Length - 1];
 
                 //Add back our old pools without the element
-                int j = 0;
-                for (int i = 0; i < oldPool.Length; i++)
-                {
+                var j = 0;
+                for (var i = 0; i < oldPool.Length; i++)
                     if (i != Index)
                     {
                         Settings.pools[j] = oldPool[i];
                         j++;
                     }
-                }
             }
             else
             {
                 Debug.LogError("Index Invalid");
             }
         }
+
         private void Swap(DynamicDecalSettings Settings, int IndexA, int IndexB)
         {
-            PoolInstance temp = Settings.pools[IndexA];
+            var temp = Settings.pools[IndexA];
             Settings.pools[IndexA] = Settings.pools[IndexB];
             Settings.pools[IndexB] = temp;
         }

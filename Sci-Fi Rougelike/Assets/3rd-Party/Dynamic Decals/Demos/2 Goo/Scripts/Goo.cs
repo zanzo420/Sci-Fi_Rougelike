@@ -1,16 +1,18 @@
-﻿using System.Collections;
-using System.Collections.Generic;
+﻿#region
+
+using System.Collections;
+using LlockhamIndustries.Decals;
 using UnityEngine;
 
-using LlockhamIndustries.Decals;
+#endregion
 
 namespace LlockhamIndustries.Misc
 {
     [RequireComponent(typeof(ProjectionRenderer))]
     public class Goo : MonoBehaviour
     {
-        public GooType type;
         private ProjectionRenderer projection;
+        public GooType type;
 
         private void OnEnable()
         {
@@ -20,6 +22,7 @@ namespace LlockhamIndustries.Misc
             //Register to singleton
             StartCoroutine(Register());
         }
+
         private void OnDisable()
         {
             //Stop register coroutine if still running
@@ -33,6 +36,7 @@ namespace LlockhamIndustries.Misc
         {
             while (!GooManager.Register(projection, type)) yield return new WaitForFixedUpdate();
         }
+
         private void Deregister()
         {
             GooManager.Deregister(projection, type);

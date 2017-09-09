@@ -1,7 +1,9 @@
-﻿using UnityEngine;
-using System.Collections;
+﻿#region
 
 using LlockhamIndustries.Decals;
+using UnityEngine;
+
+#endregion
 
 namespace LlockhamIndustries.Misc
 {
@@ -9,32 +11,37 @@ namespace LlockhamIndustries.Misc
     [ExecuteInEditMode]
     public class ExampleWeaponController : WeaponController
     {
-        [Header("Projectile Parent")]
-        public Transform parent;
-
-        [Header("Ray Projectile Fire")]
-        public GameObject rayProjectile;
-        public Vector3 raySourceOffset;
-        public float rayFireRate = 60;
-        public float raySpread = 0.3f;
-        public float raySpeed = 40;
+        public float colliderFireRate = 3;
 
         [Header("Collision Projectile Fire")]
         public GameObject colliderProjectile;
+
         public Vector3 colliderSourceOffset;
-        public float colliderFireRate = 3;
-        public float colliderSpread = 0.1f;
         public float colliderSpeed = 20;
+        public float colliderSpread = 0.1f;
+        public float hitScanFireRate = 1;
+
+        [Header("Projectile Parent")]
+        public Transform parent;
 
         [Header("Hitscan Fire")]
         public RayPrinter printer;
-        public float hitScanFireRate = 1;
+
+        public float rayFireRate = 60;
+
+        [Header("Ray Projectile Fire")]
+        public GameObject rayProjectile;
+
+        public Vector3 raySourceOffset;
+        public float raySpeed = 40;
+        public float raySpread = 0.3f;
 
         public override void UpdateWeapon()
         {
             base.UpdateWeapon();
             Fire();
         }
+
         private void Fire()
         {
             if (timeToFire == 0)
@@ -42,15 +49,15 @@ namespace LlockhamIndustries.Misc
                 //Ray Projectile Fire
                 if (primary && rayProjectile != null)
                 {
-                    Vector3 projectileDirection = Vector3.Slerp(transform.up, Random.insideUnitSphere.normalized, raySpread / 10);
-                    Quaternion projectileRotation = Quaternion.LookRotation(projectileDirection, transform.forward);
+                    var projectileDirection = Vector3.Slerp(transform.up, Random.insideUnitSphere.normalized, raySpread / 10);
+                    var projectileRotation = Quaternion.LookRotation(projectileDirection, transform.forward);
 
                     //Spawn projectile
-                    GameObject fire = (GameObject)Instantiate(rayProjectile, transform.TransformPoint(raySourceOffset), projectileRotation, parent);
+                    var fire = Instantiate(rayProjectile, transform.TransformPoint(raySourceOffset), projectileRotation, parent);
                     fire.name = "Ray";
 
                     //Setup initial velocity
-                    Rigidbody firebody = fire.GetComponent<Rigidbody>();
+                    var firebody = fire.GetComponent<Rigidbody>();
                     if (controller != null) firebody.velocity = controller.GetComponent<Rigidbody>().velocity;
                     firebody.AddForce(projectileDirection * raySpeed, ForceMode.VelocityChange);
 
@@ -63,15 +70,15 @@ namespace LlockhamIndustries.Misc
                 //Collision Projectile Fire
                 if (secondary && colliderProjectile != null)
                 {
-                    Vector3 projectileDirection = Vector3.Slerp(transform.up, Random.insideUnitSphere.normalized, colliderSpread / 10);
-                    Quaternion projectileRotation = Quaternion.LookRotation(projectileDirection, transform.forward);
+                    var projectileDirection = Vector3.Slerp(transform.up, Random.insideUnitSphere.normalized, colliderSpread / 10);
+                    var projectileRotation = Quaternion.LookRotation(projectileDirection, transform.forward);
 
                     //Spawn projectile
-                    GameObject fire = (GameObject)Instantiate(colliderProjectile, transform.TransformPoint(colliderSourceOffset), projectileRotation, parent);
+                    var fire = Instantiate(colliderProjectile, transform.TransformPoint(colliderSourceOffset), projectileRotation, parent);
                     fire.name = "Collider";
 
                     //Setup initial velocity
-                    Rigidbody firebody = fire.GetComponent<Rigidbody>();
+                    var firebody = fire.GetComponent<Rigidbody>();
                     if (controller != null) firebody.velocity = controller.GetComponent<Rigidbody>().velocity;
                     firebody.AddForce(projectileDirection * colliderSpeed, ForceMode.VelocityChange);
 
@@ -90,10 +97,10 @@ namespace LlockhamIndustries.Misc
                         return;
                     }
 
-                    Vector3 rayPosition = cameraController.transform.position;
-                    Vector3 rayDirection = cameraController.transform.forward;
+                    var rayPosition = cameraController.transform.position;
+                    var rayDirection = cameraController.transform.forward;
 
-                    Ray ray = new Ray(rayPosition, rayDirection);
+                    var ray = new Ray(rayPosition, rayDirection);
                     printer.PrintOnRay(ray, 100, cameraController.transform.up);
 
                     //Apply recoil

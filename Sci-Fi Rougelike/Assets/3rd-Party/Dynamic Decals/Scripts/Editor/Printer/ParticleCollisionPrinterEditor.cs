@@ -1,6 +1,9 @@
-﻿using UnityEngine;
+﻿#region
+
 using UnityEditor;
-using System.Collections;
+using UnityEngine;
+
+#endregion
 
 namespace LlockhamIndustries.Decals
 {
@@ -8,8 +11,8 @@ namespace LlockhamIndustries.Decals
     [CustomEditor(typeof(ParticleCollisionPrinter))]
     public class ParticleCollisionPrinterEditor : PrinterEditor
     {
-        SerializedProperty rotationSource;
-        SerializedProperty ratio;
+        private SerializedProperty ratio;
+        private SerializedProperty rotationSource;
 
         public override void OnEnable()
         {
@@ -45,6 +48,7 @@ namespace LlockhamIndustries.Decals
             EditorGUI.indentLevel--;
             EditorGUILayout.Space();
         }
+
         private void RotationSourceGUI()
         {
             EditorGUILayout.LabelField(new GUIContent("Rotation Source", "What should determine how the printed decal is orientated"));

@@ -1,33 +1,35 @@
-﻿using UnityEngine;
-using System.Collections;
+﻿#region
 
 using LlockhamIndustries.Decals;
+using UnityEngine;
+
+#endregion
 
 namespace LlockhamIndustries.Misc
 {
     //Hit Scan Weapon Controller
     public class HitScanWeaponController : WeaponController
     {
+        public float hitScanFireRate = 1;
+
         [Header("Hitscan Fire")]
         public RayPrinter printer;
-        public float hitScanFireRate = 1;
 
         public override void UpdateWeapon()
         {
             base.UpdateWeapon();
             Fire();
         }
+
         private void Fire()
         {
             if (timeToFire == 0)
-            {
-                //Hit-Scan Fire
                 if ((primary || secondary) && printer != null)
                 {
-                    Vector3 rayPosition = cameraController.transform.position;
-                    Vector3 rayDirection = cameraController.transform.forward;
+                    var rayPosition = cameraController.transform.position;
+                    var rayDirection = cameraController.transform.forward;
 
-                    Ray ray = new Ray(rayPosition, rayDirection);
+                    var ray = new Ray(rayPosition, rayDirection);
                     printer.PrintOnRay(ray, 100, cameraController.transform.up);
 
                     //Apply recoil
@@ -35,7 +37,6 @@ namespace LlockhamIndustries.Misc
 
                     timeToFire = 1 / hitScanFireRate;
                 }
-            }
         }
     }
 }

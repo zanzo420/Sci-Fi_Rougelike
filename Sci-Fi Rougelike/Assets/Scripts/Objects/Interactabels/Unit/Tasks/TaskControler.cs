@@ -1,23 +1,22 @@
-﻿//Copyright © Darwin Willers 2017
+﻿#region
 
 using System;
 using System.Collections.Generic;
 using UnityEngine;
 
+#endregion
 
 [RequireComponent(typeof(UnitMover), typeof(UnitRotater),  typeof(UnitInteractor))]
 public class TaskControler : MonoBehaviour
 {
+    private Task _currentTask;
+    private Queue<Task> _taskQ;
+    private UnitInteractor _unitInteractor;
+    private UnitMover _unitMover;
+    private UnitRotater _unitRotater;
 
 
     public bool TaskInProgress { get; private set; }
-
-    private Queue<Task> _taskQ;
-
-    private UnitMover _unitMover;
-    private UnitRotater _unitRotater;
-    private UnitInteractor _unitInteractor;
-    private Task _currentTask;
 
     private void Start()
     {
@@ -31,50 +30,6 @@ public class TaskControler : MonoBehaviour
         _unitRotater.taskDone += TaskDone;
         _unitInteractor.taskDone += TaskDone;
     }
-
-    #region AddTask - Functions
-    public void AddTask(Task task)
-    {
-        _taskQ.Enqueue(task);
-    }
-
-    public void AddTask(TaskType type, Vector3 pos)
-    {
-        AddTask( new Task(type, pos));
-    }
-
-    public void AddTask(TaskType type, params Vector3[] posArray)
-    {
-        foreach (var pos in posArray)
-        {
-            AddTask(new Task(type, pos));
-        }
-    }
-    
-    public void AddTask(TaskType type1, TaskType type2, params Vector3[] posArray)
-    {
-        foreach (var pos in posArray)
-        {
-            AddTask(new Task(type1, pos));
-            AddTask(new Task(type2, pos));
-        }
-    }
-    
-    /// <summary>
-    /// Automaticly Adds a LookAt and then a Move Task for each position
-    /// </summary>
-    /// <param name="posArray"></param>
-    public void AddTask(params Vector3[] posArray)
-    {
-        foreach (var pos in posArray)
-        {
-            AddTask(new Task(TaskType.LookAt, pos));
-            AddTask(new Task(TaskType.Move, pos));
-        }
-    }
-    
-    
-    #endregion
 
     private void TaskDone()
     {
@@ -111,4 +66,45 @@ public class TaskControler : MonoBehaviour
         }
     }
 
+    #region AddTask - Functions
+
+    public void AddTask(Task task)
+    {
+        _taskQ.Enqueue(task);
+    }
+
+    public void AddTask(TaskType type, Vector3 pos)
+    {
+        AddTask( new Task(type, pos));
+    }
+
+    public void AddTask(TaskType type, params Vector3[] posArray)
+    {
+        foreach (var pos in posArray)
+            AddTask(new Task(type, pos));
+    }
+
+    public void AddTask(TaskType type1, TaskType type2, params Vector3[] posArray)
+    {
+        foreach (var pos in posArray)
+        {
+            AddTask(new Task(type1, pos));
+            AddTask(new Task(type2, pos));
+        }
+    }
+
+    /// <summary>
+    /// Automaticly Adds a LookAt and then a Move Task for each position
+    /// </summary>
+    /// <param name="posArray"></param>
+    public void AddTask(params Vector3[] posArray)
+    {
+        foreach (var pos in posArray)
+        {
+            AddTask(new Task(TaskType.LookAt, pos));
+            AddTask(new Task(TaskType.Move, pos));
+        }
+    }
+
+    #endregion
 }

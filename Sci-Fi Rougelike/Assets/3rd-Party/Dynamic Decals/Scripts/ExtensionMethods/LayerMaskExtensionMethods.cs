@@ -1,6 +1,9 @@
-﻿using System.Collections;
+﻿#region
+
 using System.Collections.Generic;
 using UnityEngine;
+
+#endregion
 
 namespace LlockhamIndustries.ExtensionMethods
 {
@@ -8,13 +11,14 @@ namespace LlockhamIndustries.ExtensionMethods
     {
         public static bool Contains(this LayerMask Mask, int Layer)
         {
-            return (Mask == (Mask | (1 << Layer)));
+            return Mask == (Mask | (1 << Layer));
         }
 
         public static LayerMask Remove(this LayerMask Mask, int Layer)
         {
             return Mask & ~(1 << Layer);
         }
+
         public static LayerMask Remove(this LayerMask Mask, LayerMask Layers)
         {
             return Mask & ~Layers;
@@ -22,9 +26,10 @@ namespace LlockhamIndustries.ExtensionMethods
 
         public static LayerMask Add(this LayerMask Mask, int Layer)
         {
-            Mask |= (1 << Layer);
+            Mask |= 1 << Layer;
             return Mask;
         }
+
         public static LayerMask Add(this LayerMask Mask, LayerMask Layers)
         {
             Mask |= Layers;
@@ -33,34 +38,32 @@ namespace LlockhamIndustries.ExtensionMethods
 
         public static int[] ContainedLayers(this LayerMask Mask)
         {
-            List<int> layers = new List<int>();
+            var layers = new List<int>();
 
-            for (int i = 0; i < 32; i++)
-            {
+            for (var i = 0; i < 32; i++)
                 if (Mask.Contains(i)) layers.Add(i);
-            }
 
             return layers.ToArray();
         }
+
         public static string[] ContainedLayerNames(this LayerMask Mask)
         {
-            List<string> layers = new List<string>();
+            var layers = new List<string>();
 
-            for (int i = 0; i < 32; i++)
-            {
+            for (var i = 0; i < 32; i++)
                 if (Mask.Contains(i)) layers.Add(LayerMask.LayerToName(i));
-            }
 
             return layers.ToArray();
         }
 
         public static void LogLayers(this LayerMask Mask)
         {
-            foreach (int index in Mask.ContainedLayers()) Debug.Log(index);
+            foreach (var index in Mask.ContainedLayers()) Debug.Log(index);
         }
+
         public static void LogLayerNames(this LayerMask Mask)
         {
-            foreach (string name in Mask.ContainedLayerNames()) Debug.Log(name);
+            foreach (var name in Mask.ContainedLayerNames()) Debug.Log(name);
         }
     }
 }

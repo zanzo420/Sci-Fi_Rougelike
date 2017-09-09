@@ -1,6 +1,8 @@
-﻿using System.Collections;
-using System.Collections.Generic;
+﻿#region
+
 using UnityEngine;
+
+#endregion
 
 namespace LlockhamIndustries.Decals
 {
@@ -11,18 +13,19 @@ namespace LlockhamIndustries.Decals
     public class RandomScale : MonoBehaviour
     {
         /**
-        * The minimum range of the randomized scale (in units).
-        */
-        public float minSize = 0.5f;
-        /**
         * The maximum range of the randomized scale (in units).
         */
         public float maxSize = 0.8f;
 
+        /**
+        * The minimum range of the randomized scale (in units).
+        */
+        public float minSize = 0.5f;
+
         private void Awake()
         {
             //Scale projection in
-            float scale = Random.Range(minSize, maxSize);
+            var scale = Random.Range(minSize, maxSize);
             transform.localScale = new Vector3(scale, scale, scale);
         }
     }

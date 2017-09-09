@@ -1,6 +1,9 @@
-﻿using UnityEngine;
+﻿#region
+
 using UnityEditor;
-using System.Collections;
+using UnityEngine;
+
+#endregion
 
 namespace LlockhamIndustries.Decals
 {
@@ -27,9 +30,10 @@ namespace LlockhamIndustries.Decals
                 if (propertyGroups[0] == null) propertyGroups[0] = new NormalTextureDrawer(new GUIContent("Normal"), normal, this);
 
                 //Initialize property groups
-                if (propertyGroups != null) for (int i = 0; i < propertyGroups.Length; i++) propertyGroups[i].Initialize();
+                if (propertyGroups != null) for (var i = 0; i < propertyGroups.Length; i++) propertyGroups[i].Initialize();
             }
         }
+
         public override void OnDisable()
         {
             base.OnDisable();
@@ -46,9 +50,7 @@ namespace LlockhamIndustries.Decals
 
             //Draw property groups
             if (propertyGroups != null)
-            {
-                for (int i = 0; i < propertyGroups.Length; i++) propertyGroups[i].OnGUILayout();
-            }
+                for (var i = 0; i < propertyGroups.Length; i++) propertyGroups[i].OnGUILayout();
 
             //Masking();
             ProjectionLimit();

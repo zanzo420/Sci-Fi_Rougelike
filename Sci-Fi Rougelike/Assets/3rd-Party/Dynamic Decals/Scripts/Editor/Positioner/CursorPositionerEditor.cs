@@ -1,14 +1,16 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
+﻿#region
+
 using UnityEditor;
+using UnityEngine;
+
+#endregion
 
 namespace LlockhamIndustries.Decals
 {
     [CustomEditor(typeof(CursorPositioner))]
     public class CursorPositionerEditor : PositionerEditor
     {
-        SerializedProperty projectionCamera;
+        private SerializedProperty projectionCamera;
 
         public override void OnEnable()
         {

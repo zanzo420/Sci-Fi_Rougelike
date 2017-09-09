@@ -1,18 +1,18 @@
-﻿using System.Collections;
-using System.Collections.Generic;
+﻿#region
+
 using UnityEngine;
 
-using LlockhamIndustries.ExtensionMethods;
+#endregion
 
 namespace LlockhamIndustries.Misc
 {
     public class TestTrigger : MonoBehaviour
     {
-        public Trap[] traps;
         public float delay = 1;
 
-        float timeCode;
-        float timeElapsed;
+        private float timeCode;
+        private float timeElapsed;
+        public Trap[] traps;
 
         private void OnTriggerStay(Collider other)
         {
@@ -28,12 +28,8 @@ namespace LlockhamIndustries.Misc
 
                 //Trigger
                 if (timeElapsed > delay)
-                {
-                    foreach (Trap trap in traps)
-                    {
+                    foreach (var trap in traps)
                         trap.Trigger();
-                    }
-                }
             }
         }
     }

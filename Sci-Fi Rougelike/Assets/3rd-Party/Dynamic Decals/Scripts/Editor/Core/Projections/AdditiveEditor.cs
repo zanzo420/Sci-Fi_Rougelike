@@ -1,6 +1,8 @@
-﻿using UnityEngine;
+﻿#region
+
 using UnityEditor;
-using System.Collections;
+
+#endregion
 
 namespace LlockhamIndustries.Decals
 {
@@ -18,9 +20,7 @@ namespace LlockhamIndustries.Decals
 
             //Draw property groups
             if (propertyGroups != null)
-            {
-                for (int i = 0; i < propertyGroups.Length; i++) propertyGroups[i].OnGUILayout();
-            }
+                for (var i = 0; i < propertyGroups.Length; i++) propertyGroups[i].OnGUILayout();
 
             //Masking();
             ProjectionLimit();

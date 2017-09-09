@@ -1,17 +1,19 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
+﻿#region
+
 using UnityEditor;
+using UnityEngine;
+
+#endregion
 
 namespace LlockhamIndustries.Decals
 {
     [CustomEditor(typeof(RayPositioner))]
     public class RayPositionerEditor : PositionerEditor
     {
-        SerializedProperty rayTransform;
-        SerializedProperty positionOffset;
-        SerializedProperty rotationOffset;
-        SerializedProperty castLength;
+        private SerializedProperty castLength;
+        private SerializedProperty positionOffset;
+        private SerializedProperty rayTransform;
+        private SerializedProperty rotationOffset;
 
         public override void OnEnable()
         {

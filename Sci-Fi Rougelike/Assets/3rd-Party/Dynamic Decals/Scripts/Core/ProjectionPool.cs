@@ -1,7 +1,10 @@
-﻿using UnityEngine;
-using System.Collections;
+﻿#region
+
 using System.Collections.Generic;
 using LlockhamIndustries.ExtensionMethods;
+using UnityEngine;
+
+#endregion
 
 namespace LlockhamIndustries.Decals
 {
@@ -11,13 +14,27 @@ namespace LlockhamIndustries.Decals
     */
     public class ProjectionPool
     {
+        //Pool
+        internal List<PoolItem> activePool;
+
+        internal List<PoolItem> inactivePool;
+
         //Pool Details
-        private PoolInstance instance;
+        private readonly PoolInstance instance;
+
+        private Transform parent;
+
+        //Constructor
+        public ProjectionPool(PoolInstance Instance)
+        {
+            instance = Instance;
+        }
 
         public string Title
         {
             get { return instance.title; }
         }
+
         private int Limit
         {
             get
@@ -25,6 +42,7 @@ namespace LlockhamIndustries.Decals
                 return instance.limits[QualitySettings.GetQualityLevel()];
             }
         }
+
         public int ID
         {
             get { return instance.id; }
@@ -38,25 +56,14 @@ namespace LlockhamIndustries.Decals
                 if (parent == null)
                 {
                     //Generate multiscene gameObject
-                    GameObject gameObject = new GameObject(instance.title + " Pool");
-                    GameObject.DontDestroyOnLoad(gameObject);
+                    var gameObject = new GameObject(instance.title + " Pool");
+                    Object.DontDestroyOnLoad(gameObject);
 
                     //Cache transform
                     parent = gameObject.transform;
                 }
                 return parent;
             }
-        }
-        private Transform parent;
-
-        //Pool
-        internal List<PoolItem> activePool;
-        internal List<PoolItem> inactivePool;
-
-        //Constructor
-        public ProjectionPool(PoolInstance Instance)
-        {
-            instance = Instance;
         }
 
         //Get Pool
@@ -68,6 +75,7 @@ namespace LlockhamIndustries.Decals
         {
             return DynamicDecals.System.GetPool(Title);
         }
+
         /**
          * Returns a pool with the specified ID, if it exists. If it doesn't, returns the default pool.
          * @param ID The ID of the pool to be returned.
@@ -87,16 +95,15 @@ namespace LlockhamIndustries.Decals
         public bool CheckIntersecting(Vector3 Point, float intersectionStrength)
         {
             if (activePool != null && activePool.Count > 0)
-            {
-                for (int i = activePool.Count - 1; i >= 0; i--)
-                {
+                for (var i = activePool.Count - 1; i >= 0; i--)
                     if (activePool[i].Renderer != null)
                     {
                         if (activePool[i].Renderer.CheckIntersecting(Point) > intersectionStrength) return true;
                     }
-                    else activePool.RemoveAt(i);
-                }
-            }
+                    else
+                    {
+                        activePool.RemoveAt(i);
+                    }
             return false;
         }
 
@@ -114,6 +121,7 @@ namespace LlockhamIndustries.Decals
             while (pr == null) pr = RequestRenderer(Renderer, IncludeBehaviours);
             return pr;
         }
+
         private ProjectionRenderer RequestRenderer(ProjectionRenderer Renderer = null, bool IncludeBehaviours = false)
         {
             //Initialize active pool if required
@@ -122,7 +130,7 @@ namespace LlockhamIndustries.Decals
             if (inactivePool != null && inactivePool.Count > 0)
             {
                 //Grab first item in inactive pool
-                PoolItem item = inactivePool[0];
+                var item = inactivePool[0];
 
                 //Remove from inactive pool
                 inactivePool.RemoveAt(0);
@@ -135,10 +143,10 @@ namespace LlockhamIndustries.Decals
 
                 return item.Renderer;
             }
-            else if (activePool.Count < Limit)
+            if (activePool.Count < Limit)
             {
                 //Create item
-                PoolItem item = new PoolItem(this);
+                var item = new PoolItem(this);
 
                 //Initialize item
                 item.Initialize(Renderer, IncludeBehaviours);
@@ -151,7 +159,7 @@ namespace LlockhamIndustries.Decals
             else
             {
                 //Grab oldest item in active pool
-                PoolItem item = activePool[0];
+                var item = activePool[0];
 
                 //Terminate item
                 item.Terminate();
@@ -170,51 +178,44 @@ namespace LlockhamIndustries.Decals
 
     public class PoolItem
     {
-        //Pool
-        public ProjectionPool Pool
-        {
-            get { return pool; }
-        }
-        private ProjectionPool pool;
-
-        //Renderer
-        public ProjectionRenderer Renderer
-        {
-            get { return renderer; }
-        }
-        private ProjectionRenderer renderer;
-        private bool Valid
-        {
-            get
-            {
-                //Check if the object still exists
-                if (renderer == null)
-                {
-                    if (pool.activePool != null) pool.activePool.Remove(this);
-                    if (pool.inactivePool != null) pool.inactivePool.Remove(this);
-                    return false;
-                }
-
-                return true;
-            }
-        }
-
         //Constructor
         public PoolItem(ProjectionPool Pool)
         {
             //Set Pool
-            pool = Pool;
+            this.Pool = Pool;
 
             //Generate GameObject
-            GameObject go = new GameObject("Projection");
-            go.transform.SetParent(pool.Parent);
+            var go = new GameObject("Projection");
+            go.transform.SetParent(this.Pool.Parent);
 
             //Disable
             go.SetActive(false);
 
             //Attach Renderer
-            renderer = go.AddComponent<ProjectionRenderer>();
-            renderer.PoolItem = this;
+            Renderer = go.AddComponent<ProjectionRenderer>();
+            Renderer.PoolItem = this;
+        }
+
+        //Pool
+        public ProjectionPool Pool { get; private set; }
+
+        //Renderer
+        public ProjectionRenderer Renderer { get; private set; }
+
+        private bool Valid
+        {
+            get
+            {
+                //Check if the object still exists
+                if (Renderer == null)
+                {
+                    if (Pool.activePool != null) Pool.activePool.Remove(this);
+                    if (Pool.inactivePool != null) Pool.inactivePool.Remove(this);
+                    return false;
+                }
+
+                return true;
+            }
         }
 
         //Intialize / Terminate
@@ -223,70 +224,69 @@ namespace LlockhamIndustries.Decals
             if (Valid)
             {
                 //Set parent
-                renderer.transform.SetParent(pool.Parent);
+                this.Renderer.transform.SetParent(Pool.Parent);
 
                 //Copy Renderer Properties
                 if (Renderer != null)
                 {
                     //Copy projection
-                    renderer.Projection = Renderer.Projection;
+                    this.Renderer.Projection = Renderer.Projection;
 
                     //Copy properties
-                    renderer.Tiling = Renderer.Tiling;
-                    renderer.Offset = Renderer.Offset;
+                    this.Renderer.Tiling = Renderer.Tiling;
+                    this.Renderer.Offset = Renderer.Offset;
 
-                    renderer.MaskMethod = Renderer.MaskMethod;
-                    renderer.MaskLayer1 = Renderer.MaskLayer1;
-                    renderer.MaskLayer2 = Renderer.MaskLayer2;
-                    renderer.MaskLayer3 = Renderer.MaskLayer3;
-                    renderer.MaskLayer4 = Renderer.MaskLayer4;
+                    this.Renderer.MaskMethod = Renderer.MaskMethod;
+                    this.Renderer.MaskLayer1 = Renderer.MaskLayer1;
+                    this.Renderer.MaskLayer2 = Renderer.MaskLayer2;
+                    this.Renderer.MaskLayer3 = Renderer.MaskLayer3;
+                    this.Renderer.MaskLayer4 = Renderer.MaskLayer4;
 
-                    renderer.Properties = Renderer.Properties;
+                    this.Renderer.Properties = Renderer.Properties;
 
                     if (IncludeBehaviours)
-                    {
-                        foreach (MonoBehaviour component in Renderer.GetComponents<MonoBehaviour>())
+                        foreach (var component in Renderer.GetComponents<MonoBehaviour>())
                         {
                             //Don't copy transform and projection renderer components
                             if (component.GetType() == typeof(Transform)) continue;
                             if (component.GetType() == typeof(ProjectionRenderer)) continue;
 
-                            renderer.gameObject.AddComponent(component);
+                            this.Renderer.gameObject.AddComponent(component);
                         }
-                    }
 
                     //Copy scale
-                    renderer.transform.localScale = Renderer.transform.localScale;
+                    this.Renderer.transform.localScale = Renderer.transform.localScale;
                 }
                 else
                 {
                     //Reset scale
-                    renderer.transform.localScale = Vector3.one;
+                    this.Renderer.transform.localScale = Vector3.one;
                 }
 
                 //Enable
-                renderer.gameObject.SetActive(true);
+                this.Renderer.gameObject.SetActive(true);
             }
         }
+
         internal void Terminate()
         {
             if (Valid)
             {
                 //Disable
-                renderer.gameObject.SetActive(false);
+                Renderer.gameObject.SetActive(false);
 
                 //Strip unnecessary components
-                foreach (Component component in renderer.gameObject.GetComponents<Component>())
+                foreach (var component in Renderer.gameObject.GetComponents<Component>())
                 {
                     //Don't remove transform and projection renderer components
                     if (component.GetType() == typeof(Transform)) continue;
                     if (component.GetType() == typeof(ProjectionRenderer)) continue;
 
-                    Component.Destroy(component);
+                    Object.Destroy(component);
                 }
 
                 //Set parent
-                renderer.transform.SetParent(pool.Parent);
+                Renderer.transform.SetParent(Pool.Parent);
             }
         }
 
@@ -294,14 +294,14 @@ namespace LlockhamIndustries.Decals
         public void Return()
         {
             //Remove from active pool
-            pool.activePool.Remove(this);
+            Pool.activePool.Remove(this);
 
             //Terminate
             Terminate();
 
             //Return projection to inactive pool
-            if (pool.inactivePool == null) pool.inactivePool = new List<PoolItem>();
-            pool.inactivePool.Add(this);
+            if (Pool.inactivePool == null) Pool.inactivePool = new List<PoolItem>();
+            Pool.inactivePool.Add(this);
         }
     }
 }

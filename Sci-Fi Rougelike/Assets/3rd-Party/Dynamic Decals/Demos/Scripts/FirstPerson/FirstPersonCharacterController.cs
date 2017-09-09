@@ -1,53 +1,52 @@
-﻿using UnityEngine;
-using System.Collections;
+﻿#region
+
+using UnityEngine;
+
+#endregion
 
 namespace LlockhamIndustries.Misc
 {
     [ExecuteInEditMode]
     public class FirstPersonCharacterController : MonoBehaviour
     {
+        //Backing fields
+        private Rigidbody attachedRigidbody;
+
+        [Header("Camera")]
+        public Camera cameraControlled;
+
+        public Vector3 cameraOffset = new Vector3(0, 0.6f, 0);
+
+        private Vector3 cameraRotation;
+        public float cameraSmooth = 0.2f;
+        private Vector3 cameraVelocity;
+        private CapsuleCollider capsuleCollider;
+        private int collisions;
+
+        [Header("Jump")]
+        public float jumpAcceleration = 1;
+
+        private bool jumpInput;
+        private Vector2 lookDelta;
+
         [Header("Look")]
         public float lookSensitivity = 3f;
 
         [Header("Move")]
         public float moveAcceleration = 0.2f;
+
+        private Vector3 moveDelta;
         public float moveSpeed = 8;
-
-        [Header("Jump")]
-        public float jumpAcceleration = 1;
-
-        [Header("Camera")]
-        public Camera cameraControlled;
-        public float cameraSmooth = 0.2f;
-        public Vector3 cameraOffset = new Vector3(0, 0.6f, 0);
-
-        [Header("Weapon")]
-        public WeaponController weapon;
-
-        //Properties
-        public bool Grounded
-        {
-            get { return grounded; }
-        }
-
-        //Backing fields
-        private Rigidbody attachedRigidbody;
-        private CapsuleCollider capsuleCollider;
-
-        private Vector3 cameraRotation;
-        private Vector2 lookDelta;
 
         private float recoil;
         private float recoilDuration;
         private float recoilVelocity;
 
-        private Vector3 moveDelta;
+        [Header("Weapon")]
+        public WeaponController weapon;
 
-        private bool grounded;
-        private int collisions;
-
-        private bool jumpInput;
-        private Vector3 cameraVelocity;
+        //Properties
+        public bool Grounded { get; private set; }
 
         //Generic methods
         private void Awake()
@@ -65,11 +64,13 @@ namespace LlockhamIndustries.Misc
                 Cursor.visible = false;
             }
         }
+
         private void OnEnable()
         {
             if (cameraControlled == null) cameraControlled = Camera.main;
             cameraRotation = cameraControlled.transform.rotation.eulerAngles;
         }
+
         private void Update()
         {
             //Look Input
@@ -87,20 +88,20 @@ namespace LlockhamIndustries.Misc
         private void FixedUpdate()
         {
             //Update character rotation
-            Vector3 characterRotation = transform.rotation.eulerAngles;
+            var characterRotation = transform.rotation.eulerAngles;
             characterRotation.y += lookDelta.x * lookSensitivity;
             transform.rotation = Quaternion.Euler(characterRotation);
 
             //Get velocity
-            Vector3 velocity = attachedRigidbody.velocity;
+            var velocity = attachedRigidbody.velocity;
 
             //Update horizontal velocity
-            Vector3 goalAcceleration = transform.rotation * moveDelta.normalized * moveAcceleration;
+            var goalAcceleration = transform.rotation * moveDelta.normalized * moveAcceleration;
             velocity.x += goalAcceleration.x;
             velocity.z += goalAcceleration.z;
 
             //Clamp to max speed
-            Vector2 horizontalVelocity = new Vector2(velocity.x, velocity.z);
+            var horizontalVelocity = new Vector2(velocity.x, velocity.z);
             if (horizontalVelocity.magnitude > moveSpeed)
             {
                 velocity.x *= moveSpeed / horizontalVelocity.magnitude;
@@ -108,13 +109,11 @@ namespace LlockhamIndustries.Misc
             }
 
             //Grounded
-            grounded = CheckGrounded();
+            Grounded = CheckGrounded();
 
             //Jumping
-            if (jumpInput && grounded)
-            {
+            if (jumpInput && Grounded)
                 velocity.y += jumpAcceleration;
-            }
 
             //Set velocity
             attachedRigidbody.velocity = velocity;
@@ -129,7 +128,7 @@ namespace LlockhamIndustries.Misc
 
             //Update recoil
             recoil = Mathf.SmoothDamp(recoil, 0, ref recoilVelocity, recoilDuration);
-            Vector3 RecoiledRotation = cameraRotation;
+            var RecoiledRotation = cameraRotation;
             RecoiledRotation.x -= recoil;
 
             cameraControlled.transform.rotation = Quaternion.Euler(RecoiledRotation);
@@ -140,10 +139,12 @@ namespace LlockhamIndustries.Misc
             //Update weapon - Called here instead of within its own FixedUpdate because we need to guarentee it's not updated until after the camera position has been
             if (weapon != null) weapon.UpdateWeapon();
         }
+
         private void OnCollisionEnter(Collision collision)
         {
             collisions++;
         }
+
         private void OnCollisionExit(Collision collision)
         {
             collisions--;
@@ -151,7 +152,7 @@ namespace LlockhamIndustries.Misc
 
         private bool CheckGrounded()
         {
-            return (collisions > 0 && Physics.Raycast(transform.position, -Vector3.up, capsuleCollider.bounds.extents.y * 1.4f));
+            return collisions > 0 && Physics.Raycast(transform.position, -Vector3.up, capsuleCollider.bounds.extents.y * 1.4f);
         }
 
         //Recoil

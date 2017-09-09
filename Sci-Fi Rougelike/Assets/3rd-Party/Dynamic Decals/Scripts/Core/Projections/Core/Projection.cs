@@ -1,7 +1,9 @@
-﻿using UnityEngine;
-using UnityEngine.Rendering;
+﻿#region
 
-using System.Collections;
+using System;
+using UnityEngine;
+
+#endregion
 
 namespace LlockhamIndustries.Decals
 {
@@ -9,27 +11,24 @@ namespace LlockhamIndustries.Decals
     * The abstract projection class. All projections inherit from this singular class. 
     * If you want to make your own projection types, inherit from this class. The system's UI should automatically detect and allow you to create projections of your custom type.
     */
-    [System.Serializable]
+    [Serializable]
     public abstract class Projection : ScriptableObject
     {
+        private bool marked;
+
         public Material[] Materials
         {
             get
             {
-                if (ForceForward || DynamicDecals.System.SystemPath == SystemPath.Forward || (ForwardOnly && !DeferredOnly))
-                {
+                if (ForceForward || DynamicDecals.System.SystemPath == SystemPath.Forward || ForwardOnly && !DeferredOnly)
                     return Forward;
-                }
-                else
+                switch (TransparencyType)
                 {
-                    switch (TransparencyType)
-                    {
-                        case TransparencyType.Cutout:
-                            return DeferredOpaque;
+                    case TransparencyType.Cutout:
+                        return DeferredOpaque;
 
-                        case TransparencyType.Blend:
-                            return DeferredTransparent;
-                    }
+                    case TransparencyType.Blend:
+                        return DeferredTransparent;
                 }
                 return null;
             }
@@ -39,10 +38,12 @@ namespace LlockhamIndustries.Decals
         {
             get;
         }
+
         public abstract Material[] DeferredOpaque
         {
             get;
         }
+
         public abstract Material[] DeferredTransparent
         {
             get;
@@ -61,101 +62,11 @@ namespace LlockhamIndustries.Decals
         {
             get { return false; }
         }
+
         public virtual bool DeferredOnly
         {
             get { return false; }
         }
-
-        protected void UpdateMaterialArray(Material[] Materials)
-        {
-            if (Materials != null)
-            {
-                foreach (Material material in Materials)
-                {
-                    if (material != null) Apply(material);
-                }
-            }
-        }
-        protected abstract void UpdateMaterials();
-        protected virtual void Apply(Material Material)
-        {
-            //Type
-            switch (type)
-            {
-                case ProjectionType.Decal:
-                    Material.DisableKeyword("_Omni");
-                    break;
-                case ProjectionType.OmniDecal:
-                    Material.EnableKeyword("_Omni");
-                    break;
-            }
-
-            //Instancing
-            #if !UNITY_5_5
-            Material.enableInstancing = Instanced;
-            #endif
-
-            //Transparency
-            switch (transparencyType)
-            {
-                case TransparencyType.Blend:
-                    Material.DisableKeyword("_AlphaTest");
-                    break;
-                case TransparencyType.Cutout:
-                    Material.EnableKeyword("_AlphaTest");
-                    break;
-            }
-            Material.SetFloat(_Cutoff, cutoff);
-
-            //Tiling/Offset
-            Vector4 tilingOffset = new Vector4(tiling.x, tiling.y, offset.x, offset.y);
-            Material.SetVector(_TilingOffset, tilingOffset);
-
-            //Masking
-            if (masks.Length == 4)
-            {
-                switch (maskMethod)
-                {
-                    case MaskMethod.DrawOnEverythingExcept:
-                        Material.SetFloat(_MaskBase, 1);
-
-                        Color except = Color.clear;
-                        except.r = (masks[0]) ? 0 : 0.5f;
-                        except.g = (masks[1]) ? 0 : 0.5f;
-                        except.b = (masks[2]) ? 0 : 0.5f;
-                        except.a = (masks[3]) ? 0 : 0.5f;
-
-                        Material.SetVector(_MaskLayers, except);
-                        break;
-
-                    case MaskMethod.OnlyDrawOn:
-                        Material.SetFloat(_MaskBase, 0);
-
-                        Color only = Color.clear;
-                        only.r = (masks[0]) ? 1 : 0.5f;
-                        only.g = (masks[1]) ? 1 : 0.5f;
-                        only.b = (masks[2]) ? 1 : 0.5f;
-                        only.a = (masks[3]) ? 1 : 0.5f;
-
-                        Material.SetVector(_MaskLayers, only);
-                        break;
-                }
-            }
-
-            //Projection Limit
-            float limit = Mathf.Cos(Mathf.Deg2Rad * projectionLimit);
-            Material.SetFloat(_NormalCutoff, limit);
-        }
-
-        protected void DestroyMaterialArray(Material[] Materials)
-        {
-            foreach (Material material in Materials)
-            {
-                if (Application.isPlaying) Destroy(material);
-                else DestroyImmediate(material, true);
-            }
-        }
-        protected abstract void DestroyMaterials();
 
         //Static Properties
         /**
@@ -210,6 +121,7 @@ namespace LlockhamIndustries.Decals
                 }
             }
         }
+
         /**
         * The alpha cutoff of the projection.
         * Any pixels with an alpha value below this value will not be rendered.
@@ -243,6 +155,7 @@ namespace LlockhamIndustries.Decals
                 }
             }
         }
+
         /**
         * The offset of all textures applied to your decal.
         * Allows you to adjust the position of your texture, useful for scrolling effects, atlassing or to tweak tiling textures.
@@ -277,6 +190,7 @@ namespace LlockhamIndustries.Decals
                 }
             }
         }
+
         /**
         * Defines whether this projection is affected by the first masking layer. 
         * To add surfaces to this mask layer add a Mask component to a renderable gameObject and toggle on the appropriate mask layer.
@@ -293,6 +207,7 @@ namespace LlockhamIndustries.Decals
                 }
             }
         }
+
         /**
         * Defines whether this projection is affected by the second masking layer.
         * To add surfaces to this mask layer add a Mask component to a renderable gameObject and toggle on the appropriate mask layer.
@@ -309,6 +224,7 @@ namespace LlockhamIndustries.Decals
                 }
             }
         }
+
         /**
         * Defines whether this projection is affected by the third masking layer.
         * To add surfaces to this mask layer add a Mask component to a renderable gameObject and toggle on the appropriate mask layer.
@@ -325,6 +241,7 @@ namespace LlockhamIndustries.Decals
                 }
             }
         }
+
         /**
         * Defines whether this projection is affected by the fourth masking layer.
         * To add surfaces to this mask layer add a Mask component to a renderable gameObject and toggle on the appropriate mask layer.
@@ -368,9 +285,10 @@ namespace LlockhamIndustries.Decals
         */
         public bool Instanced
         {
-            get { return (DynamicDecals.System.Instanced && instanced); }
+            get { return DynamicDecals.System.Instanced && instanced; }
             set { instanced = value; }
         }
+
         public abstract int InstanceLimit
         {
             get;
@@ -382,7 +300,7 @@ namespace LlockhamIndustries.Decals
         */
         public bool ForceForward
         {
-            get { return (DynamicDecals.System.Settings.forceForward || forceForward); }
+            get { return DynamicDecals.System.Settings.forceForward || forceForward; }
             set { forceForward = value; }
         }
 
@@ -395,6 +313,92 @@ namespace LlockhamIndustries.Decals
                 return properties;
             }
         }
+
+        protected void UpdateMaterialArray(Material[] Materials)
+        {
+            if (Materials != null)
+                foreach (var material in Materials)
+                    if (material != null) Apply(material);
+        }
+
+        protected abstract void UpdateMaterials();
+
+        protected virtual void Apply(Material Material)
+        {
+            //Type
+            switch (type)
+            {
+                case ProjectionType.Decal:
+                    Material.DisableKeyword("_Omni");
+                    break;
+                case ProjectionType.OmniDecal:
+                    Material.EnableKeyword("_Omni");
+                    break;
+            }
+
+            //Instancing
+            #if !UNITY_5_5
+            Material.enableInstancing = Instanced;
+            #endif
+
+            //Transparency
+            switch (transparencyType)
+            {
+                case TransparencyType.Blend:
+                    Material.DisableKeyword("_AlphaTest");
+                    break;
+                case TransparencyType.Cutout:
+                    Material.EnableKeyword("_AlphaTest");
+                    break;
+            }
+            Material.SetFloat(_Cutoff, cutoff);
+
+            //Tiling/Offset
+            var tilingOffset = new Vector4(tiling.x, tiling.y, offset.x, offset.y);
+            Material.SetVector(_TilingOffset, tilingOffset);
+
+            //Masking
+            if (masks.Length == 4)
+                switch (maskMethod)
+                {
+                    case MaskMethod.DrawOnEverythingExcept:
+                        Material.SetFloat(_MaskBase, 1);
+
+                        var except = Color.clear;
+                        except.r = masks[0] ? 0 : 0.5f;
+                        except.g = masks[1] ? 0 : 0.5f;
+                        except.b = masks[2] ? 0 : 0.5f;
+                        except.a = masks[3] ? 0 : 0.5f;
+
+                        Material.SetVector(_MaskLayers, except);
+                        break;
+
+                    case MaskMethod.OnlyDrawOn:
+                        Material.SetFloat(_MaskBase, 0);
+
+                        var only = Color.clear;
+                        only.r = masks[0] ? 1 : 0.5f;
+                        only.g = masks[1] ? 1 : 0.5f;
+                        only.b = masks[2] ? 1 : 0.5f;
+                        only.a = masks[3] ? 1 : 0.5f;
+
+                        Material.SetVector(_MaskLayers, only);
+                        break;
+                }
+
+            //Projection Limit
+            var limit = Mathf.Cos(Mathf.Deg2Rad * projectionLimit);
+            Material.SetFloat(_NormalCutoff, limit);
+        }
+
+        protected void DestroyMaterialArray(Material[] Materials)
+        {
+            foreach (var material in Materials)
+                if (Application.isPlaying) Destroy(material);
+                else DestroyImmediate(material, true);
+        }
+
+        protected abstract void DestroyMaterials();
         public abstract void UpdateProperties();
 
         //Enable - Disable
@@ -402,6 +406,7 @@ namespace LlockhamIndustries.Decals
         {
             GenerateIDs();
         }
+
         protected virtual void OnDisable()
         {
             DestroyMaterials();
@@ -428,9 +433,9 @@ namespace LlockhamIndustries.Decals
             marked = true;
             if (UpdateImmediately) Update();
         }
-        private bool marked;
 
         #region Backing Fields
+
         //Instanced Properties
         protected ProjectionProperty[] properties;
 
@@ -439,33 +444,39 @@ namespace LlockhamIndustries.Decals
         protected ProjectionType type;
 
         [SerializeField]
-        protected bool instanced = false;
+        protected bool instanced;
 
         [SerializeField]
-        protected bool forceForward = false;
+        protected bool forceForward;
 
         [SerializeField]
         protected int priority;
 
         [SerializeField]
         protected TransparencyType transparencyType;
+
         [SerializeField]
         protected float cutoff = 0.2f;
 
         [SerializeField]
         protected Vector2 tiling;
+
         [SerializeField]
         protected Vector2 offset;
 
         [SerializeField]
         protected MaskMethod maskMethod;
+
         [SerializeField]
         protected bool[] masks = new bool[4];
 
         [SerializeField]
         protected float projectionLimit = 80;
+
         #endregion
+
         #region Property Ids
+
         public int _Cutoff;
         public int _TilingOffset;
         public int _MaskBase;
@@ -480,10 +491,11 @@ namespace LlockhamIndustries.Decals
             _MaskLayers = Shader.PropertyToID("_MaskLayers");
             _NormalCutoff = Shader.PropertyToID("_NormalCutoff");
         }
+
         #endregion
     }
 
-    public enum ProjectionType { Decal, OmniDecal };
-    public enum MaskMethod { DrawOnEverythingExcept, OnlyDrawOn };
-    public enum TransparencyType { Cutout, Blend };
+    public enum ProjectionType { Decal, OmniDecal }
+    public enum MaskMethod { DrawOnEverythingExcept, OnlyDrawOn }
+    public enum TransparencyType { Cutout, Blend }
 }

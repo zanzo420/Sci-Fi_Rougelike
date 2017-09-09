@@ -1,31 +1,31 @@
-﻿using UnityEngine;
+﻿#region
+
 using UnityEditor;
-using System.Collections;
+using UnityEngine;
+
+#endregion
 
 namespace LlockhamIndustries.Decals
 {
     [CustomEditor(typeof(Projection))]
     public abstract class ProjectionEditor : Editor
     {
-        //Type
-        protected SerializedProperty type;
-
-        //Instanced
-        protected SerializedProperty instanced;
+        protected SerializedProperty cutoff;
+        private bool delayedMark;
 
         //Force Forward
         protected SerializedProperty forceForward;
 
-        //Priority
-        protected SerializedProperty priority;
-
-        //Transparency
-        protected SerializedProperty transparencyType;
-        protected SerializedProperty cutoff;
+        //Instanced
+        protected SerializedProperty instanced;
 
         //Masking
         protected SerializedProperty maskMethod;
+
         protected SerializedProperty masks;
+
+        //Priority
+        protected SerializedProperty priority;
 
         //Projection Limit
         protected SerializedProperty projectionLimit;
@@ -33,40 +33,42 @@ namespace LlockhamIndustries.Decals
         //Drawers
         protected PropertyGroupDrawer[] propertyGroups;
 
+        //Transparency
+        protected SerializedProperty transparencyType;
+
+        //Type
+        protected SerializedProperty type;
+
         public void Mark()
         {
             //Apply changes
             serializedObject.ApplyModifiedProperties();
 
             //Update projection
-            for (int i = 0; i < serializedObject.targetObjects.Length; i++)
-            {
+            for (var i = 0; i < serializedObject.targetObjects.Length; i++)
                 ((Projection)serializedObject.targetObjects[i]).Mark(true);
-            }
 
             //Repaint scene
             SceneView.RepaintAll();
         }
+
         public void Reorder()
         {
             //Apply changes
             serializedObject.ApplyModifiedProperties();
 
             //Reorder projection
-            foreach (UnityEngine.Object projection in serializedObject.targetObjects)
-            {
+            foreach (var projection in serializedObject.targetObjects)
                 DynamicDecals.System.Reorder(projection as Projection);
-            }
 
             //Repaint scene
             SceneView.RepaintAll();
         }
+
         protected void MarkAllPreviews()
         {
             if (propertyGroups != null)
-            {
-                for (int i = 0; i < propertyGroups.Length; i++) propertyGroups[i].Mark();
-            }
+                for (var i = 0; i < propertyGroups.Length; i++) propertyGroups[i].Mark();
         }
 
         public virtual void OnEnable()
@@ -88,6 +90,7 @@ namespace LlockhamIndustries.Decals
                 projectionLimit = serializedObject.FindProperty("projectionLimit");
             }
         }
+
         public virtual void OnDisable()
         {
             //Dergister from undo redo
@@ -95,9 +98,7 @@ namespace LlockhamIndustries.Decals
 
             //Terminate property drawers
             if (propertyGroups != null)
-            {
-                for (int i = 0; i < propertyGroups.Length; i++) propertyGroups[i].Terminate();
-            }
+                for (var i = 0; i < propertyGroups.Length; i++) propertyGroups[i].Terminate();
         }
 
         private void OnUndoRedo()
@@ -111,15 +112,15 @@ namespace LlockhamIndustries.Decals
             //Repaint editor
             Repaint();
         }
+
         private void DelayedMark()
         {
             delayedMark = true;
         }
-        private bool delayedMark;
 
         protected void Type()
         {
-            Rect Rect = GUILayoutUtility.GetRect(0, 22 + LlockhamEditorUtility.Spacing);
+            var Rect = GUILayoutUtility.GetRect(0, 22 + LlockhamEditorUtility.Spacing);
             EditorGUI.DrawRect(new Rect(Rect.x, Rect.y + 2, Rect.width, Rect.height - 6), LlockhamEditorUtility.MidgroundColor);
             GUI.BeginGroup(Rect);
 
@@ -128,14 +129,15 @@ namespace LlockhamIndustries.Decals
 
             //Properties
             EditorGUI.BeginChangeCheck();
-            EditorGUI.PropertyField(new Rect((Rect.width * 0.4f) + 8, 4, (Rect.width * 0.6f) - 12, 16), type, new GUIContent(""));
+            EditorGUI.PropertyField(new Rect(Rect.width * 0.4f + 8, 4, Rect.width * 0.6f - 12, 16), type, new GUIContent(""));
             if (EditorGUI.EndChangeCheck()) Mark();
 
             GUI.EndGroup();
         }
+
         protected void Priority(int PriorityLimit = 100)
         {
-            Rect Rect = GUILayoutUtility.GetRect(0, 22 + LlockhamEditorUtility.Spacing);
+            var Rect = GUILayoutUtility.GetRect(0, 22 + LlockhamEditorUtility.Spacing);
             EditorGUI.DrawRect(new Rect(Rect.x, Rect.y + 2, Rect.width, Rect.height - 6), LlockhamEditorUtility.MidgroundColor);
             GUI.BeginGroup(Rect);
 
@@ -144,16 +146,17 @@ namespace LlockhamIndustries.Decals
             
             //Properties
             EditorGUI.BeginChangeCheck();
-            priority.intValue = EditorGUI.IntSlider(new Rect((Rect.width * 0.4f) + 8, 4, (Rect.width * 0.6f) - 12, 16), new GUIContent(""), priority.intValue, 0, PriorityLimit);
+            priority.intValue = EditorGUI.IntSlider(new Rect(Rect.width * 0.4f + 8, 4, Rect.width * 0.6f - 12, 16), new GUIContent(""), priority.intValue, 0, PriorityLimit);
             if (EditorGUI.EndChangeCheck()) Reorder();
 
             GUI.EndGroup();
         }
+
         protected void Transparency(bool Supported = true)
         {
             if (Supported)
             {
-                Rect Rect = GUILayoutUtility.GetRect(0, ((transparencyType.enumValueIndex == 0) ? 42 : 22) + LlockhamEditorUtility.Spacing);
+                var Rect = GUILayoutUtility.GetRect(0, (transparencyType.enumValueIndex == 0 ? 42 : 22) + LlockhamEditorUtility.Spacing);
                 EditorGUI.DrawRect(new Rect(Rect.x, Rect.y + 2, Rect.width, Rect.height - 6), LlockhamEditorUtility.MidgroundColor);
                 GUI.BeginGroup(Rect);
 
@@ -162,14 +165,12 @@ namespace LlockhamIndustries.Decals
 
                 //Properties
                 EditorGUI.BeginChangeCheck();
-                EditorGUI.PropertyField(new Rect((Rect.width * 0.4f) + 8, 4, (Rect.width * 0.6f) - 12, 16), transparencyType, new GUIContent(""));
+                EditorGUI.PropertyField(new Rect(Rect.width * 0.4f + 8, 4, Rect.width * 0.6f - 12, 16), transparencyType, new GUIContent(""));
                 if (EditorGUI.EndChangeCheck())
                 {
                     //Adjust cutoff
                     if (transparencyType.enumValueIndex == 0)
-                    {
                         cutoff.floatValue = 0.2f;
-                    }
                     else cutoff.floatValue = 0.01f;
 
                     //Apply changes
@@ -203,9 +204,10 @@ namespace LlockhamIndustries.Decals
             }
             
         }
+
         protected void Masking()
         {
-            Rect Rect = GUILayoutUtility.GetRect(0, 62 + LlockhamEditorUtility.Spacing);
+            var Rect = GUILayoutUtility.GetRect(0, 62 + LlockhamEditorUtility.Spacing);
             EditorGUI.DrawRect(new Rect(Rect.x, Rect.y + 2, Rect.width, Rect.height - 6), LlockhamEditorUtility.MidgroundColor);
             GUI.BeginGroup(Rect);
 
@@ -215,20 +217,21 @@ namespace LlockhamIndustries.Decals
             //Properties
             EditorGUI.BeginChangeCheck();
             EditorGUI.PropertyField(new Rect(80, 5, Rect.width - 84, 16), maskMethod, new GUIContent(""));
-            for (int i = 0; i < masks.arraySize; i++)
+            for (var i = 0; i < masks.arraySize; i++)
             {
-                Rect rect = new Rect((i == 0 || i == 2)? 4: (Rect.width / 2) + 4, (i < 2)? 22: 40, (Rect.width / 2) - 16, 16);
+                var rect = new Rect(i == 0 || i == 2? 4: Rect.width / 2 + 4, i < 2? 22: 40, Rect.width / 2 - 16, 16);
                 EditorGUI.LabelField(new Rect(rect.x, rect.y, rect.width - 8, rect.height), new GUIContent(DynamicDecals.System.Settings.Layers[i].name, ""), LlockhamEditorUtility.MiniLabel);
                 masks.GetArrayElementAtIndex(i).boolValue = EditorGUI.Toggle(new Rect(rect.xMax - 8, rect.y, 14, rect.height), new GUIContent(""), masks.GetArrayElementAtIndex(i).boolValue);
             }
             if (EditorGUI.EndChangeCheck()) Mark();
             GUI.EndGroup();
         }
+
         protected void ProjectionLimit()
         {
             if (type.enumValueIndex == 0)
             {
-                Rect Rect = GUILayoutUtility.GetRect(0, 22 + LlockhamEditorUtility.Spacing);
+                var Rect = GUILayoutUtility.GetRect(0, 22 + LlockhamEditorUtility.Spacing);
                 EditorGUI.DrawRect(new Rect(Rect.x, Rect.y + 2, Rect.width, Rect.height - 6), LlockhamEditorUtility.MidgroundColor);
                 GUI.BeginGroup(Rect);
 
@@ -237,7 +240,7 @@ namespace LlockhamIndustries.Decals
 
                 //Properties
                 EditorGUI.BeginChangeCheck();
-                projectionLimit.floatValue = EditorGUI.Slider(new Rect((Rect.width * 0.4f) + 8, 4, (Rect.width * 0.6f) - 12, 16), new GUIContent(""), projectionLimit.floatValue, 0, 180);
+                projectionLimit.floatValue = EditorGUI.Slider(new Rect(Rect.width * 0.4f + 8, 4, Rect.width * 0.6f - 12, 16), new GUIContent(""), projectionLimit.floatValue, 0, 180);
                 if (EditorGUI.EndChangeCheck())
                 {
                     MarkAllPreviews();
@@ -246,17 +249,18 @@ namespace LlockhamIndustries.Decals
                 GUI.EndGroup();
             }
         }
+
         protected void ForceForward()
         {
-            foreach (UnityEngine.Object obj in serializedObject.targetObjects)
+            foreach (var obj in serializedObject.targetObjects)
             {
-                Projection projection = obj as Projection;
+                var projection = obj as Projection;
 
                 if (!projection.ForwardOnly && !projection.DeferredOnly)
                 {
                     if (!DynamicDecals.System.Settings.forceForward)
                     {
-                        Rect Rect = GUILayoutUtility.GetRect(0, 22 + LlockhamEditorUtility.Spacing);
+                        var Rect = GUILayoutUtility.GetRect(0, 22 + LlockhamEditorUtility.Spacing);
                         EditorGUI.DrawRect(new Rect(Rect.x, Rect.y + 2, Rect.width, Rect.height - 6), LlockhamEditorUtility.MidgroundColor);
                         GUI.BeginGroup(Rect);
 
@@ -265,7 +269,7 @@ namespace LlockhamIndustries.Decals
 
                         //Properties
                         EditorGUI.BeginChangeCheck();
-                        forceForward.boolValue = EditorGUI.Toggle(new Rect((Rect.width * 0.4f) + 8, 4, (Rect.width * 0.6f) - 12, 16), new GUIContent(""), forceForward.boolValue);
+                        forceForward.boolValue = EditorGUI.Toggle(new Rect(Rect.width * 0.4f + 8, 4, Rect.width * 0.6f - 12, 16), new GUIContent(""), forceForward.boolValue);
                         if (EditorGUI.EndChangeCheck()) Mark();
 
                         GUI.EndGroup();
@@ -279,9 +283,10 @@ namespace LlockhamIndustries.Decals
             }
             
         }
+
         protected void Instanced()
         {
-            Rect Rect = GUILayoutUtility.GetRect(0, 22 + LlockhamEditorUtility.Spacing);
+            var Rect = GUILayoutUtility.GetRect(0, 22 + LlockhamEditorUtility.Spacing);
             EditorGUI.DrawRect(new Rect(Rect.x, Rect.y + 2, Rect.width, Rect.height - 6), LlockhamEditorUtility.MidgroundColor);
             GUI.BeginGroup(Rect);
 
@@ -290,7 +295,7 @@ namespace LlockhamIndustries.Decals
 
             //Properties
             EditorGUI.BeginChangeCheck();
-            instanced.boolValue = EditorGUI.Toggle(new Rect((Rect.width * 0.4f) + 8, 4, (Rect.width * 0.6f) - 12, 16), new GUIContent(""), instanced.boolValue);
+            instanced.boolValue = EditorGUI.Toggle(new Rect(Rect.width * 0.4f + 8, 4, Rect.width * 0.6f - 12, 16), new GUIContent(""), instanced.boolValue);
             if (EditorGUI.EndChangeCheck()) Mark();
 
             GUI.EndGroup();
@@ -302,10 +307,8 @@ namespace LlockhamIndustries.Decals
             if (delayedMark)
             {
                 //Update projection & properties
-                for (int i = 0; i < serializedObject.targetObjects.Length; i++)
-                {
+                for (var i = 0; i < serializedObject.targetObjects.Length; i++)
                     ((Projection)serializedObject.targetObjects[i]).Mark(true);
-                }
 
                 //Repaint scene
                 SceneView.RepaintAll();

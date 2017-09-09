@@ -1,11 +1,14 @@
-﻿using UnityEngine;
-using System.Collections;
+﻿#region
+
+using UnityEngine;
+
+#endregion
 
 namespace LlockhamIndustries.Misc
 {
     public class VSyncDisable : MonoBehaviour
     {
-        void Start()
+        private void Start()
         {
             QualitySettings.vSyncCount = 0;
         }

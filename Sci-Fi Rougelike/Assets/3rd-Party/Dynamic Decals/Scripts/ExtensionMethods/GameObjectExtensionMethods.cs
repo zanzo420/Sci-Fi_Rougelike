@@ -1,7 +1,9 @@
-﻿using System;
-using System.Linq;
+﻿#region
+
 using System.Reflection;
 using UnityEngine;
+
+#endregion
 
 namespace LlockhamIndustries.ExtensionMethods
 {
@@ -9,33 +11,32 @@ namespace LlockhamIndustries.ExtensionMethods
     {
         public static T AddComponent<T>(this GameObject GameObject, T Source) where T : MonoBehaviour
         {
-            return GameObject.AddComponent<T>().GetCopyOf(Source) as T;
+            return GameObject.AddComponent<T>().GetCopyOf(Source);
         }
+
         public static MonoBehaviour AddComponent(this GameObject GameObject, MonoBehaviour Source)
         {
-            Type type = Source.GetType();
+            var type = Source.GetType();
 
             #if !UNITY_EDITOR && UNITY_WSA
             bool isSubclass = type.GetTypeInfo().IsSubclassOf(typeof(MonoBehaviour));
             #else
-            bool isSubclass = type.IsSubclassOf(typeof(MonoBehaviour));
+            var isSubclass = type.IsSubclassOf(typeof(MonoBehaviour));
             #endif
 
             if (isSubclass)
-            {
                 return ((MonoBehaviour)GameObject.AddComponent(type)).GetCopyOf(Source);
-            }
-            else return null;
+            return null;
         }
 
         public static T GetCopyOf<T>(this MonoBehaviour Monobehaviour, T Source) where T : MonoBehaviour
         {
             //Type check
-            Type type = Monobehaviour.GetType();
+            var type = Monobehaviour.GetType();
             if (type != Source.GetType()) return null;
 
             //Declare Binding Flags
-            System.Reflection.BindingFlags flags = System.Reflection.BindingFlags.Public | System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.DeclaredOnly;
+            var flags = BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.DeclaredOnly;
             
             //Iterate through all types until monobehaviour is reached
             while (type != typeof(MonoBehaviour))
@@ -44,12 +45,10 @@ namespace LlockhamIndustries.ExtensionMethods
                 #if !UNITY_EDITOR && UNITY_WSA
                 System.Reflection.FieldInfo[] fields = type.GetFields(flags).ToArray();
                 #else
-                System.Reflection.FieldInfo[] fields = type.GetFields(flags);
+                var fields = type.GetFields(flags);
                 #endif
-                foreach (System.Reflection.FieldInfo field in fields)
-                {
+                foreach (var field in fields)
                     field.SetValue(Monobehaviour, field.GetValue(Source));
-                }
 
                 //Move to base class
                 #if !UNITY_EDITOR && UNITY_WSA

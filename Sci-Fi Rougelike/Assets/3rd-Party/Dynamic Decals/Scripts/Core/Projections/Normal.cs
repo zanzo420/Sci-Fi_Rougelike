@@ -1,32 +1,45 @@
-﻿using UnityEngine;
-using System.Collections;
+﻿#region
+
 using System;
+using UnityEngine;
+
+#endregion
 
 namespace LlockhamIndustries.Decals
 {
     /**
     * Deferred Only normal projection. Only affects the normal buffer. Useful for adding cracks or normal details to tiled surfaces.
     */
-    [System.Serializable]
+    [Serializable]
     public class Normal : Deferred
     {
+        //Materials
+        protected Material[] deferredMaterials;
+
+        //Static Properties
+        /**
+        * The primary color details of your projection.
+        * The alpha channel of these properties is used to determine the projections transparency.
+        */
+        public NormalPropertyGroup normal;
+
         //Materials
         public override Material[] DeferredOpaque
         {
             get { return DeferredMaterials; }
         }
+
         public override Material[] DeferredTransparent
         {
             get { return DeferredMaterials; }
         }
+
         private Material[] DeferredMaterials
         {
             get
             {
                 if (deferredMaterials == null || deferredMaterials.Length != 1)
-                {
                     deferredMaterials = new Material[1];
-                }
                 if (deferredMaterials[0] == null)
                 {
                     deferredMaterials[0] = new Material(Shader.Find("Projection/Decal/Normal"));
@@ -47,6 +60,7 @@ namespace LlockhamIndustries.Decals
         {
             UpdateMaterialArray(deferredMaterials);
         }
+
         protected override void Apply(Material Material)
         {
             //Apply base
@@ -59,17 +73,8 @@ namespace LlockhamIndustries.Decals
         protected override void DestroyMaterials()
         {
             if (deferredMaterials != null)
-            {
                 DestroyMaterialArray(deferredMaterials);
-            }
         }
-
-        //Static Properties
-        /**
-        * The primary color details of your projection.
-        * The alpha channel of these properties is used to determine the projections transparency.
-        */
-        public NormalPropertyGroup normal;
 
         protected override void OnEnable()
         {
@@ -78,6 +83,7 @@ namespace LlockhamIndustries.Decals
 
             base.OnEnable();
         }
+
         protected override void GenerateIDs()
         {
             base.GenerateIDs();
@@ -94,8 +100,5 @@ namespace LlockhamIndustries.Decals
             //Normal Strength
             properties[0] = new ProjectionProperty("Normal", normal._BumpScale, normal.Strength);
         }
-
-        //Materials
-        protected Material[] deferredMaterials;
     }
 }

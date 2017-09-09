@@ -1,21 +1,24 @@
-﻿using System.Collections;
-using System.Collections.Generic;
+﻿#region
+
 using UnityEngine;
+
+#endregion
 
 namespace LlockhamIndustries.Misc
 {
     public class ParticleWeaponController : WeaponController
     {
+        private ParticleSystem.EmissionModule blueEmissionModule;
+
         [Header("Particle Fire")]
         public ParticleSystem blueParticles;
-        public ParticleSystem orangeParticles;
+
         public int fireRate = 250;
+        private ParticleSystem.EmissionModule orangeEmissionModule;
+        public ParticleSystem orangeParticles;
 
         [Header("Recoil")]
         public float recoil = 2;
-
-        private ParticleSystem.EmissionModule blueEmissionModule;
-        private ParticleSystem.EmissionModule orangeEmissionModule;
 
         public void OnEnable()
         {
@@ -28,13 +31,13 @@ namespace LlockhamIndustries.Misc
             base.UpdateWeapon();
             Fire();
         }
+
         private void Fire()
         {
             if (timeToFire == 0)
             {
                 //Primary fire
                 if (blueParticles != null)
-                {
                     if (primary)
                     {
                         //Spawn particles
@@ -48,11 +51,9 @@ namespace LlockhamIndustries.Misc
                         //Don't spawn particles
                         blueEmissionModule.rateOverTimeMultiplier = 0;
                     }
-                }
 
                 //Secondary fire
                 if (orangeParticles != null)
-                {
                     if (secondary)
                     {
                         //Spawn particles
@@ -66,7 +67,6 @@ namespace LlockhamIndustries.Misc
                         //Don't spawn particles
                         orangeEmissionModule.rateOverTimeMultiplier = 0;
                     }
-                }
             }
         }
     }

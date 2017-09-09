@@ -1,16 +1,16 @@
-﻿//Copyright © Darwin Willers 2017
+﻿#region
 
 using System;
 using System.Collections;
 using UnityEngine;
 
+#endregion
 
 public class UnitRotater : MonoBehaviour
 {
+    public float rotationTime = .5f;
 
     public Action taskDone;
-    
-    public float rotationTime = .5f;
     public bool IsRotating { get; private set; }
 
     public void LookAt(Vector3 target)
@@ -46,7 +46,7 @@ public class UnitRotater : MonoBehaviour
         IsRotating = false;
         if (taskDone != null) taskDone();
     }
-    
+
     private bool CheckIsRotating()
     {
         if (!IsRotating) return false;

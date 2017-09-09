@@ -1,6 +1,8 @@
-﻿using System.Collections;
-using System.Collections.Generic;
+﻿#region
+
 using UnityEngine;
+
+#endregion
 
 namespace LlockhamIndustries.Misc
 {
@@ -13,20 +15,19 @@ namespace LlockhamIndustries.Misc
         private void Start()
         {
             if (cursor != null)
-            {
                 initialPosition = cursor.transform.position;
-            }
         }
+
         private void Update()
         {
             if (cursor != null)
             {
-                Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
+                var ray = Camera.main.ScreenPointToRay(Input.mousePosition);
                 RaycastHit hit;
 
                 if (Physics.Raycast(ray, out hit, Mathf.Infinity) && InsideTransform(transform, hit.point))
                 {
-                    cursor.transform.position = hit.point + (hit.normal * 1);
+                    cursor.transform.position = hit.point + hit.normal * 1;
                     velocity = Vector3.zero;
                 }
                 else
@@ -38,7 +39,7 @@ namespace LlockhamIndustries.Misc
 
         private bool InsideTransform(Transform transform, Vector3 point)
         {
-            Vector3 localPoint = transform.InverseTransformPoint(point);
+            var localPoint = transform.InverseTransformPoint(point);
 
             if (localPoint.x > 0.5f || localPoint.x < -0.5f) return false;
             if (localPoint.y > 0.5f || localPoint.y < -0.5f) return false;
@@ -51,12 +52,13 @@ namespace LlockhamIndustries.Misc
         {
             DrawGizmo(true);
         }
+
         private void DrawGizmo(bool Selected)
         {
             if (isActiveAndEnabled)
             {
                 //Decalare color and matrix
-                Color color = new Color(0.8f, 0.8f, 0.8f, 1.0f);
+                var color = new Color(0.8f, 0.8f, 0.8f, 1.0f);
                 Gizmos.matrix = transform.localToWorldMatrix;
 
                 //Draw selection gizmo

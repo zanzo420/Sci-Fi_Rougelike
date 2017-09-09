@@ -1,20 +1,31 @@
-﻿using UnityEngine;
-using UnityEngine.Rendering;
-using System.Collections;
-using System;
+﻿#region
 
+using System;
+using UnityEngine;
 #if UNITY_EDITOR
-using UnityEditor;
+
 #endif
+
+#endregion
 
 namespace LlockhamIndustries.Decals
 {
     /**
     * The base of all unlit forward projections (Unlit, Additive, Multiplicative)
     */
-    [System.Serializable]
+    [Serializable]
     public abstract class Base : Projection
     {
+        //Static Properties
+        /**
+        * The primary color details of your projection.
+        * The alpha channel of these properties is used to determine the projections transparency.
+        */
+        public AlbedoPropertyGroup albedo;
+
+        //Materials
+        protected Material[] forwardMaterials;
+
         //Instanced count
         public override int InstanceLimit
         {
@@ -32,6 +43,7 @@ namespace LlockhamIndustries.Decals
         {
             get { return null; }
         }
+
         public override Material[] DeferredTransparent
         {
             get { return null; }
@@ -41,6 +53,7 @@ namespace LlockhamIndustries.Decals
         {
             UpdateMaterialArray(forwardMaterials);
         }
+
         protected override void Apply(Material Material)
         {
             //Apply base
@@ -53,17 +66,8 @@ namespace LlockhamIndustries.Decals
         protected override void DestroyMaterials()
         {
             if (forwardMaterials != null)
-            {
                 DestroyMaterialArray(forwardMaterials);
-            }
         }
-
-        //Static Properties
-        /**
-        * The primary color details of your projection.
-        * The alpha channel of these properties is used to determine the projections transparency.
-        */
-        public AlbedoPropertyGroup albedo;
 
         protected override void OnEnable()
         {
@@ -72,6 +76,7 @@ namespace LlockhamIndustries.Decals
 
             base.OnEnable();
         }
+
         protected override void GenerateIDs()
         {
             base.GenerateIDs();
@@ -88,8 +93,5 @@ namespace LlockhamIndustries.Decals
             //Albedo Color
             properties[0] = new ProjectionProperty("Albedo", albedo._Color, albedo.Color);
         }
-
-        //Materials
-        protected Material[] forwardMaterials;
     }
 }

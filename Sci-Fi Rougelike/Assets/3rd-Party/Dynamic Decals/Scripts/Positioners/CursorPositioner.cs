@@ -1,6 +1,8 @@
-﻿using System.Collections;
-using System.Collections.Generic;
+﻿#region
+
 using UnityEngine;
+
+#endregion
 
 namespace LlockhamIndustries.Decals
 {
@@ -21,7 +23,8 @@ namespace LlockhamIndustries.Decals
 
             base.Start();
         }
-        void LateUpdate()
+
+        private void LateUpdate()
         {
             //Reproject every update
             Reproject(projectionCamera.ScreenPointToRay(Input.mousePosition), Mathf.Infinity, projectionCamera.transform.up);

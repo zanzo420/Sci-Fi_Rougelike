@@ -1,29 +1,63 @@
-﻿using UnityEngine;
-using UnityEngine.Rendering;
-using System.Collections;
-using System;
+﻿#region
 
+using System;
+using UnityEngine;
 #if UNITY_EDITOR
-using UnityEditor;
+
 #endif
+
+#endregion
 
 namespace LlockhamIndustries.Decals
 {
     /**
     * Standard Shader - metallic setup.
     */
-    [System.Serializable]
+    [Serializable]
     public class Metallic : Projection
     {
+        //Static Properties
+        /**
+        * The primary color details of your projection.
+        * The alpha channel of these properties is used to determine the projections transparency.
+        */
+        public AlbedoPropertyGroup albedo;
+
+        protected Material[] deferredOpaqueMaterials;
+
+        protected Material[] deferredTransparentMaterials;
+
+        /**
+        * The emission texture of your projection, multiplied by the emission color and intensity.
+        * Emission allows us to make a decal appear as if it's emitting light. Supports HDR.
+        */
+        public EmissivePropertyGroup emissive;
+
+        //Materials
+        protected Material[] forwardMaterials;
+
+        /**
+        * The metallic texture, with a multiplier.
+        * Determines how metallic the surface of the decal appears.
+        * black will make the decal surface appear like plastic.
+        * white will make the decal surface appear metallic.
+        * Only the R channel of the texture is used.
+        */
+        public MetallicPropertyGroup metallic;
+
+        /**
+        * The normal texture of your decal, multiplied by the normal strength. 
+        * Normals determine how the surface of your decal interacts with lights.
+        */
+        public NormalPropertyGroup normal;
+
         //Materials
         public override Material[] Forward
         {
             get
             {
                 if (forwardMaterials == null || forwardMaterials.Length != 1)
-                {
                     forwardMaterials = new Material[1];
-                }
                 if (forwardMaterials[0] == null)
                 {
                     forwardMaterials[0] = new Material(Shader.Find("Projection/Decal/Metallic/Forward"));
@@ -33,14 +67,13 @@ namespace LlockhamIndustries.Decals
                 return forwardMaterials;
             }
         }
+
         public override Material[] DeferredOpaque
         {
             get
             {
                 if (deferredOpaqueMaterials == null || deferredOpaqueMaterials.Length != 1)
-                {
                     deferredOpaqueMaterials = new Material[1];
-                }
                 if (deferredOpaqueMaterials[0] == null)
                 {
                     deferredOpaqueMaterials[0] = new Material(Shader.Find("Projection/Decal/Metallic/DeferredOpaque"));
@@ -50,14 +83,13 @@ namespace LlockhamIndustries.Decals
                 return deferredOpaqueMaterials;
             }
         }
+
         public override Material[] DeferredTransparent
         {
             get
             {
                 if (deferredTransparentMaterials == null || deferredTransparentMaterials.Length != 2)
-                {
                     deferredTransparentMaterials = new Material[2];
-                }
                 if (deferredTransparentMaterials[0] == null)
                 {
                     deferredTransparentMaterials[0] = new Material(Shader.Find("Projection/Decal/Metallic/DeferredBaseTransparent"));
@@ -86,6 +118,7 @@ namespace LlockhamIndustries.Decals
             UpdateMaterialArray(deferredOpaqueMaterials);
             UpdateMaterialArray(deferredTransparentMaterials);
         }
+
         protected override void Apply(Material Material)
         {
             //Apply base
@@ -101,43 +134,12 @@ namespace LlockhamIndustries.Decals
         protected override void DestroyMaterials()
         {
             if (forwardMaterials != null)
-            {
                 DestroyMaterialArray(forwardMaterials);
-            }
             if (deferredOpaqueMaterials != null)
-            {
                 DestroyMaterialArray(deferredOpaqueMaterials);
-            }
             if (deferredTransparentMaterials != null)
-            {
                 DestroyMaterialArray(deferredTransparentMaterials);
-            }
         }
-
-        //Static Properties
-        /**
-        * The primary color details of your projection.
-        * The alpha channel of these properties is used to determine the projections transparency.
-        */
-        public AlbedoPropertyGroup albedo;
-        /**
-        * The metallic texture, with a multiplier.
-        * Determines how metallic the surface of the decal appears.
-        * black will make the decal surface appear like plastic.
-        * white will make the decal surface appear metallic.
-        * Only the R channel of the texture is used.
-        */
-        public MetallicPropertyGroup metallic;
-        /**
-        * The normal texture of your decal, multiplied by the normal strength. 
-        * Normals determine how the surface of your decal interacts with lights.
-        */
-        public NormalPropertyGroup normal;
-        /**
-        * The emission texture of your projection, multiplied by the emission color and intensity.
-        * Emission allows us to make a decal appear as if it's emitting light. Supports HDR.
-        */
-        public EmissivePropertyGroup emissive;
 
         protected override void OnEnable()
         {
@@ -149,6 +151,7 @@ namespace LlockhamIndustries.Decals
 
             base.OnEnable();
         }
+
         protected override void GenerateIDs()
         {
             base.GenerateIDs();
@@ -171,10 +174,5 @@ namespace LlockhamIndustries.Decals
             //Emission Color
             properties[1] = new ProjectionProperty("Emission", emissive._EmissionColor, emissive.Color, emissive.Intensity);
         }
-
-        //Materials
-        protected Material[] forwardMaterials;
-        protected Material[] deferredOpaqueMaterials;
-        protected Material[] deferredTransparentMaterials;
     }
 }

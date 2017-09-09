@@ -1,37 +1,39 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
+﻿#region
 
 using LlockhamIndustries.ExtensionMethods;
+using UnityEngine;
+
+#endregion
 
 namespace LlockhamIndustries.Misc
 {
     public class Ragdoll : MonoBehaviour
     {
+        public float chunkAngle = 35;
+        public GameObject chunkdoll;
+        public ParticleSystem chunkParticles;
+
+        [Header("Chunkdoll Triggers")]
+        public float chunkVelocity = 50;
+
         [Header("GameObjects")]
         public GameObject ragdoll;
-        public GameObject chunkdoll;
 
         [Header("Particles")]
         public ParticleSystem ragParticles;
-        public ParticleSystem chunkParticles;
-
-        [Header("Layers")]
-        public LayerMask triggerLayers;
 
         [Header("Ragdoll Triggers")]
         public float ragVelocity = 10;
 
-        [Header("Chunkdoll Triggers")]
-        public float chunkVelocity = 50;
-        public float chunkAngle = 35;
+        [Header("Layers")]
+        public LayerMask triggerLayers;
 
         private void OnCollisionEnter(Collision collision)
         {
-            foreach (ContactPoint contact in collision.contacts)
+            foreach (var contact in collision.contacts)
             {
                 //Grab rigidbody
-                Rigidbody rigidbody = contact.otherCollider.GetComponent<Rigidbody>();
+                var rigidbody = contact.otherCollider.GetComponent<Rigidbody>();
 
                 if (rigidbody != null && rigidbody.velocity.magnitude > chunkVelocity && triggerLayers.Contains(rigidbody.gameObject.layer))
                 {
@@ -41,7 +43,7 @@ namespace LlockhamIndustries.Misc
                         TriggerChunkdoll(rigidbody.mass, rigidbody.velocity);
 
                         //Grab first chunk
-                        Transform chunk = chunkdoll.transform.GetChild(0);
+                        var chunk = chunkdoll.transform.GetChild(0);
 
                         //Spawn & play particles
                         SpawnParticles(chunkParticles, contact.point, contact.normal, chunk);
@@ -63,7 +65,7 @@ namespace LlockhamIndustries.Misc
         private void TriggerRagdoll(float ExternalMass, Vector3 ExternalVelocity)
         {
             //Disable our collider
-            Collider collider = GetComponent<Collider>();
+            var collider = GetComponent<Collider>();
             if (collider != null) collider.enabled = false;
 
             //Spawn ragdoll
@@ -73,11 +75,11 @@ namespace LlockhamIndustries.Misc
             SyncTransformRecursively(ragdoll.transform, transform);
 
             //Calculate mass
-            float currentMass = CalculateMassRecursively(ragdoll.transform);
+            var currentMass = CalculateMassRecursively(ragdoll.transform);
 
             //Calculate velocity
-            float lerp = ExternalMass / (ExternalMass + currentMass);
-            Vector3 velocity = Vector3.Lerp(Vector3.zero, ExternalVelocity, lerp);
+            var lerp = ExternalMass / (ExternalMass + currentMass);
+            var velocity = Vector3.Lerp(Vector3.zero, ExternalVelocity, lerp);
 
             //Set velocity
             SetVelocityRecursively(ragdoll.transform, velocity);
@@ -85,21 +87,22 @@ namespace LlockhamIndustries.Misc
             //Destroy ourself
             Destroy(gameObject);
         }
+
         private void TriggerChunkdoll(float ExternalMass, Vector3 ExternalVelocity)
         {
             //Disable our collider
-            Collider collider = GetComponent<Collider>();
+            var collider = GetComponent<Collider>();
             if (collider != null) collider.enabled = false;
 
             //Spawn chunkdoll
             chunkdoll = Instantiate(chunkdoll, transform.position, transform.rotation, transform.parent);
 
             //Calculate mass
-            float currentMass = CalculateMassRecursively(chunkdoll.transform);
+            var currentMass = CalculateMassRecursively(chunkdoll.transform);
 
             //Calculate velocity
-            float lerp = ExternalMass / (ExternalMass + currentMass);
-            Vector3 velocity = Vector3.Lerp(Vector3.zero, ExternalVelocity, lerp);
+            var lerp = ExternalMass / (ExternalMass + currentMass);
+            var velocity = Vector3.Lerp(Vector3.zero, ExternalVelocity, lerp);
 
             //Set velocity
             SetVelocityRecursively(chunkdoll.transform, velocity * 2);
@@ -112,7 +115,7 @@ namespace LlockhamIndustries.Misc
         {
             if (Particles != null)
             {
-                ParticleSystem p = Instantiate(Particles, Position, Quaternion.LookRotation(Normal), Parent);
+                var p = Instantiate(Particles, Position, Quaternion.LookRotation(Normal), Parent);
                 p.name = Particles.name;
                 p.Play();
             }
@@ -125,16 +128,17 @@ namespace LlockhamIndustries.Misc
 
             foreach (Transform child in Transform)
             {
-                Transform target = Target.Find(child.name);
+                var target = Target.Find(child.name);
                 SyncTransformRecursively(child, target);
             }
         }
+
         private float CalculateMassRecursively(Transform Transform)
         {
             float mass = 0;
 
             //Add rigidbody mass
-            Rigidbody rigidbody = Transform.GetComponent<Rigidbody>();
+            var rigidbody = Transform.GetComponent<Rigidbody>();
             if (rigidbody != null) mass += rigidbody.mass;
 
             //Add child rigidbodies mass
@@ -142,15 +146,14 @@ namespace LlockhamIndustries.Misc
 
             return mass;
         }
+
         private void SetVelocityRecursively(Transform Transform, Vector3 Velocity)
         {
-            Rigidbody rigidbody = Transform.GetComponent<Rigidbody>();
+            var rigidbody = Transform.GetComponent<Rigidbody>();
             if (rigidbody != null) rigidbody.velocity = Velocity;
 
             foreach (Transform child in Transform)
-            {
                 SetVelocityRecursively(child, Velocity);
-            }
         }
     }
 }

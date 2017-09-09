@@ -1,8 +1,10 @@
-﻿using System.Collections;
-using System.Collections.Generic;
+﻿#region
+
+using System.Collections;
+using LlockhamIndustries.Decals;
 using UnityEngine;
 
-using LlockhamIndustries.Decals;
+#endregion
 
 namespace LlockhamIndustries.Misc
 {
@@ -23,6 +25,7 @@ namespace LlockhamIndustries.Misc
             //Fade projection out
             StartCoroutine(FadeIn());
         }
+
         private void OnDisable()
         {
             StopAllCoroutines();
@@ -33,7 +36,7 @@ namespace LlockhamIndustries.Misc
             float timeElapsed = 0;
 
             //Get color
-            Color color = projectionRenderer.Properties[0].color;
+            var color = projectionRenderer.Properties[0].color;
 
             while (timeElapsed < holdTime + inTime)
             {
@@ -41,7 +44,7 @@ namespace LlockhamIndustries.Misc
                 timeElapsed += Time.deltaTime;
 
                 //Calculate alpha modifier
-                float modifier = Mathf.Pow(Mathf.Clamp01(1 - ((timeElapsed - holdTime) / inTime)), 0.6f);
+                var modifier = Mathf.Pow(Mathf.Clamp01(1 - (timeElapsed - holdTime) / inTime), 0.6f);
 
                 //Apply color
                 projectionRenderer.SetColor(0, Color.Lerp(Color.white, color, modifier));

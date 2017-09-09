@@ -1,11 +1,10 @@
-﻿//Copyright © Darwin Willers 2017
+﻿#region
 
 using UnityEngine;
 
+#endregion
+
 public abstract class Interactabel : MonoBehaviour
 {
-
-
     public abstract void Interact(Transform other);
-
 }

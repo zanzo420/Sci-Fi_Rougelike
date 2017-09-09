@@ -1,6 +1,9 @@
-﻿using System.Collections;
+﻿#region
+
 using System.Collections.Generic;
 using UnityEngine;
+
+#endregion
 
 namespace LlockhamIndustries.Decals
 {
@@ -10,6 +13,19 @@ namespace LlockhamIndustries.Decals
     [ExecuteInEditMode]
     public class NineSprite : MonoBehaviour
     {
+        [SerializeField]
+        private float borderPixelSize = 0.4f;
+
+        [SerializeField]
+        private float borderWorldSize = 0.2f;
+
+        //Backing fields
+        [SerializeField]
+        private ProjectionRenderer sprite;
+
+        [SerializeField]
+        private ProjectionRenderer[] spritePieces;
+
         /**
         * The decal we want to use as a base. Nine copies of this will be made and used to represent your sprite. This should almost always be a prefab.
         */
@@ -41,6 +57,7 @@ namespace LlockhamIndustries.Decals
                 }
             }
         }
+
         /**
         * How large each corner / how thick each edge should be in units (world space). This will adjust how we represent the original decal in the world.
         */
@@ -57,16 +74,6 @@ namespace LlockhamIndustries.Decals
             }
         }
 
-        //Backing fields
-        [SerializeField]
-        private ProjectionRenderer sprite;
-        [SerializeField]
-        private float borderPixelSize = 0.4f;
-        [SerializeField]
-        private float borderWorldSize = 0.2f;
-        [SerializeField]
-        private ProjectionRenderer[] spritePieces;
-
         //Generic methods
         private void OnDestroy()
         {
@@ -80,7 +87,7 @@ namespace LlockhamIndustries.Decals
         */
         public void UpdateProperties()
         {
-            for (int i = 0; i < spritePieces.Length; i++)
+            for (var i = 0; i < spritePieces.Length; i++)
             {
                 //Copy projection from sprite
                 spritePieces[i].Projection = sprite.Projection;
@@ -104,12 +111,13 @@ namespace LlockhamIndustries.Decals
                 spritePieces[i].UpdateProperties();
             }
         }
+
         /**
         * Updates all nine decals to account for a change in scale. This should be called when you stretch (scale) the nine-sprite, to have it rescale it's sprite pieces to match the new scale.
         */
         public void UpdateTransforms()
         {
-            for (int i = 0; i < spritePieces.Length; i++)
+            for (var i = 0; i < spritePieces.Length; i++)
             {
                 spritePieces[i].transform.localPosition = LocalPosition(i);
                 spritePieces[i].transform.localRotation = Quaternion.identity;
@@ -123,17 +131,18 @@ namespace LlockhamIndustries.Decals
             switch (Index)
             {
                 case 0: return new Vector2(borderPixelSize, borderPixelSize);
-                case 1: return new Vector2(1 - (2 * borderPixelSize), borderPixelSize);
+                case 1: return new Vector2(1 - 2 * borderPixelSize, borderPixelSize);
                 case 2: return new Vector2(borderPixelSize, borderPixelSize);
-                case 3: return new Vector2(borderPixelSize, 1 - (2 * borderPixelSize));
-                case 4: return new Vector2(1 - (2 * borderPixelSize), 1 - (2 * borderPixelSize));
-                case 5: return new Vector2(borderPixelSize, 1 - (2 * borderPixelSize));
+                case 3: return new Vector2(borderPixelSize, 1 - 2 * borderPixelSize);
+                case 4: return new Vector2(1 - 2 * borderPixelSize, 1 - 2 * borderPixelSize);
+                case 5: return new Vector2(borderPixelSize, 1 - 2 * borderPixelSize);
                 case 6: return new Vector2(borderPixelSize, borderPixelSize);
-                case 7: return new Vector2(1 - (2 * borderPixelSize), borderPixelSize);
+                case 7: return new Vector2(1 - 2 * borderPixelSize, borderPixelSize);
                 case 8: return new Vector2(borderPixelSize, borderPixelSize);
             }
             return Vector2.zero;
         }
+
         private Vector2 Offset(int Index)
         {
             switch (Index)
@@ -153,8 +162,8 @@ namespace LlockhamIndustries.Decals
 
         private Vector3 LocalPosition(int Index)
         {
-            float width = borderWorldSize / transform.localScale.x / 2;
-            float height = borderWorldSize / transform.localScale.y / 2;
+            var width = borderWorldSize / transform.localScale.x / 2;
+            var height = borderWorldSize / transform.localScale.y / 2;
 
             switch (Index)
             {
@@ -170,21 +179,22 @@ namespace LlockhamIndustries.Decals
             }
             return Vector3.zero;
         }
+
         private Vector3 LocalScale(int Index)
         {
-            float width = borderWorldSize / transform.localScale.x;
-            float height = borderWorldSize / transform.localScale.y;
+            var width = borderWorldSize / transform.localScale.x;
+            var height = borderWorldSize / transform.localScale.y;
 
             switch (Index)
             {
                 case 0: return new Vector3(width, height, 1);
-                case 1: return new Vector3(1 - (2 * width), height, 1);
+                case 1: return new Vector3(1 - 2 * width, height, 1);
                 case 2: return new Vector3(width, height, 1);
-                case 3: return new Vector3(width, 1 - (2 * height), 1);
-                case 4: return new Vector3(1 - (2 * width), 1 - (2 * height), 1);
-                case 5: return new Vector3(width, 1 - (2 * height), 1);
+                case 3: return new Vector3(width, 1 - 2 * height, 1);
+                case 4: return new Vector3(1 - 2 * width, 1 - 2 * height, 1);
+                case 5: return new Vector3(width, 1 - 2 * height, 1);
                 case 6: return new Vector3(width, height, 1);
-                case 7: return new Vector3(1 - (2 * width), height, 1);
+                case 7: return new Vector3(1 - 2 * width, height, 1);
                 case 8: return new Vector3(width, height, 1);
             }
             return Vector3.one;
@@ -205,15 +215,16 @@ namespace LlockhamIndustries.Decals
             spritePieces[7] = GenerateRenderer("BottomMiddle");
             spritePieces[8] = GenerateRenderer("BottomRight");
         }
+
         private ProjectionRenderer GenerateRenderer(string Name)
         {
             //Generate new gameObject
-            GameObject gameObject = new GameObject(Name);
+            var gameObject = new GameObject(Name);
             gameObject.transform.parent = transform;
             gameObject.hideFlags = HideFlags.HideInHierarchy | HideFlags.HideInInspector;
 
             //Generate projection renderer
-            ProjectionRenderer renderer = gameObject.AddComponent<ProjectionRenderer>();
+            var renderer = gameObject.AddComponent<ProjectionRenderer>();
 
             //Add ninesprite piece so we know to delete
             gameObject.AddComponent<NineSpritePiece>();
@@ -230,37 +241,41 @@ namespace LlockhamIndustries.Decals
                 UpdateProperties();
                 UpdateTransforms();
             }
-            else ClearSprite();
+            else
+            {
+                ClearSprite();
+            }
         }
+
         private void ClearSprite()
         {
             if (spritePieces != null)
             {
-                for (int i = 0; i < spritePieces.Length; i++)
-                {
+                for (var i = 0; i < spritePieces.Length; i++)
                     DestroyImmediate(spritePieces[i]);
-                }
 
                 spritePieces = null;
             }
-        }        
+        }
 
-        #if UNITY_EDITOR
+#if UNITY_EDITOR
         //Gizmos
         public void OnDrawGizmos()
         {
             DrawGizmo(false);
         }
+
         public void OnDrawGizmosSelected()
         {
             DrawGizmo(true);
         }
+
         private void DrawGizmo(bool Selected)
         {
             if (isActiveAndEnabled)
             {
                 //Decalare color and matrix
-                Color color = new Color(0.8f, 0.8f, 0.8f, 1.0f);
+                var color = new Color(0.8f, 0.8f, 0.8f, 1.0f);
                 Gizmos.matrix = transform.localToWorldMatrix;
 
                 //Draw selection gizmo
@@ -272,11 +287,11 @@ namespace LlockhamIndustries.Decals
 
         //Duplicate check
         [SerializeField]
-        private int instanceID = 0;
+        private int instanceID;
+
         private void Awake()
         {
             if (!Application.isPlaying)
-            {
                 if (instanceID == 0)
                 {
                     instanceID = GetInstanceID();
@@ -287,17 +302,13 @@ namespace LlockhamIndustries.Decals
                     instanceID = GetInstanceID();
 
                     //Grab all immediate children
-                    List<Transform> children = new List<Transform>();
+                    var children = new List<Transform>();
                     foreach (Transform child in transform) children.Add(child);
 
                     //Destroy all immediate child nine sprite pieces
-                    for (int i = children.Count - 1; i >= 0; i--)
-                    {
+                    for (var i = children.Count - 1; i >= 0; i--)
                         if (children[i].GetComponent<NineSpritePiece>())
-                        {
                             DestroyImmediate(children[i].gameObject);
-                        }
-                    }
 
                     //Clear sprite pieces
                     spritePieces = null;
@@ -305,8 +316,7 @@ namespace LlockhamIndustries.Decals
                     //Setup ninesprite
                     UpdateNineSprite();
                 }
-            }
         }
-        #endif
+#endif
     }
 }

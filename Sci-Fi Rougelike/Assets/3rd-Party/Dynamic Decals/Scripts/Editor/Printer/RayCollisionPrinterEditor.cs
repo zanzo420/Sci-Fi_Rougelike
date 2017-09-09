@@ -1,7 +1,9 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
+﻿#region
+
 using UnityEditor;
+using UnityEngine;
+
+#endregion
 
 namespace LlockhamIndustries.Decals
 {
@@ -9,18 +11,18 @@ namespace LlockhamIndustries.Decals
     [CustomEditor(typeof(RayCollisionPrinter))]
     public class RayCollisionPrinterEditor : PrinterEditor
     {
-        SerializedProperty condition;
-        SerializedProperty conditionTime;
+        private SerializedProperty castCenter;
+        private SerializedProperty castDimensions;
+        private SerializedProperty castLength;
+        private SerializedProperty condition;
+        private SerializedProperty conditionTime;
+        private SerializedProperty hitTriggers;
 
-        SerializedProperty layers;
+        private SerializedProperty layers;
 
-        SerializedProperty method;
-        SerializedProperty castCenter;
-        SerializedProperty castDimensions;
-        SerializedProperty castLength;
-        SerializedProperty positionOffset;
-        SerializedProperty rotationOffset;
-        SerializedProperty hitTriggers;
+        private SerializedProperty method;
+        private SerializedProperty positionOffset;
+        private SerializedProperty rotationOffset;
 
         public override void OnEnable()
         {
@@ -74,15 +76,14 @@ namespace LlockhamIndustries.Decals
             EditorGUI.indentLevel--;
             EditorGUILayout.Space();
         }
+
         private void LayersGUI()
         {
             if (prints.arraySize > 1 && printMethod.enumValueIndex == 2)
             {
-                int finalLayers = 0;
+                var finalLayers = 0;
                 foreach (SerializedProperty layermask in printLayers)
-                {
-                    finalLayers = (finalLayers | layermask.intValue);
-                }
+                    finalLayers = finalLayers | layermask.intValue;
                 layers.intValue = finalLayers;
             }
             else
@@ -94,6 +95,7 @@ namespace LlockhamIndustries.Decals
                 EditorGUILayout.Space();
             }
         }
+
         private void CastGUI()
         {
             EditorGUILayout.LabelField("Cast Information");
@@ -101,9 +103,7 @@ namespace LlockhamIndustries.Decals
             EditorGUILayout.PropertyField(method);
             EditorGUILayout.PropertyField(castCenter);
             if (method.enumValueIndex != 0)
-            {
                 EditorGUILayout.PropertyField(castDimensions);
-            }
             EditorGUILayout.PropertyField(castLength);
             EditorGUILayout.PropertyField(positionOffset);
             EditorGUILayout.PropertyField(rotationOffset);

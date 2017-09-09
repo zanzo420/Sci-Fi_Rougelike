@@ -1,6 +1,8 @@
-﻿using System.Collections;
-using System.Collections.Generic;
+﻿#region
+
 using UnityEngine;
+
+#endregion
 
 namespace LlockhamIndustries.Decals
 {
@@ -20,6 +22,7 @@ namespace LlockhamIndustries.Decals
             //Load custom settings
             DynamicDecals.System.Settings.Layers = layers;
         }
+
         private void OnDisable()
         {
             //Revert to original settings

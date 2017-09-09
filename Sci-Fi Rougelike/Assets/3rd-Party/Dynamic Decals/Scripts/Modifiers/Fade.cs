@@ -1,6 +1,9 @@
-﻿using System.Collections;
-using System.Collections.Generic;
+﻿#region
+
+using System.Collections;
 using UnityEngine;
+
+#endregion
 
 namespace LlockhamIndustries.Decals
 {
@@ -11,6 +14,31 @@ namespace LlockhamIndustries.Decals
     [RequireComponent(typeof(ProjectionRenderer))]
     public class Fade : MonoBehaviour
     {
+        private bool executing;
+
+        /**
+        * Determines the fade value over time. 
+        * A curve starting at 0 and ending at 1 would have your projection fade in.
+        * A curve starting at 1 and ending at 0 would have your projection fade out.
+        * A curve starting and ending at 0, but peaking at 1 in the center will have your projection fade in and out.
+        */
+        public AnimationCurve fade;
+
+        /**
+        * Determines how long the fade takes, in seconds. Cannot be set to 0.
+        */
+        public float fadeLength = 1;
+
+        /**
+        * When should the fade routine begin.
+        * OnEnable will have the projection begin fading in/out immediately.
+        * OnInvoke will allow you to start the fade method via script later via the InvokeFade() method. 
+        */
+        public FadeMethod method;
+
+        //Backing fields
+        private ProjectionRenderer projection;
+
         //Inspector variables
         /**
         * What's being used to fade in/out your projection.
@@ -19,12 +47,13 @@ namespace LlockhamIndustries.Decals
         * Both will adjust both the alpha value and scale of your projection
         */
         public FadeType type;
+
         /**
-        * When should the fade routine begin.
-        * OnEnable will have the projection begin fading in/out immediately.
-        * OnInvoke will allow you to start the fade method via script later via the InvokeFade() method. 
+        * How often we update the fade of our projection. The lower this value the smoother the fade, though slow gradual fades won't need to be updated frequently.
+        * 0.05 will update 20 times a second, 0.5, twice a second and 2 once every 2 seconds.
         */
-        public FadeMethod method;
+        public float updateRate = 0.05f;
+
         /**
         * Determines what the fade method actually does. Are you fading the projection in, out, making it throb?
         * Once is the traditional fade out. This will play through the fade curve once and then destroy the projection.
@@ -34,38 +63,18 @@ namespace LlockhamIndustries.Decals
         */
         public FadeWrapMode wrapMode;
 
-        /**
-        * Determines the fade value over time. 
-        * A curve starting at 0 and ending at 1 would have your projection fade in.
-        * A curve starting at 1 and ending at 0 would have your projection fade out.
-        * A curve starting and ending at 0, but peaking at 1 in the center will have your projection fade in and out.
-        */
-        public AnimationCurve fade;
-        /**
-        * Determines how long the fade takes, in seconds. Cannot be set to 0.
-        */
-        public float fadeLength = 1;
-
-        /**
-        * How often we update the fade of our projection. The lower this value the smoother the fade, though slow gradual fades won't need to be updated frequently.
-        * 0.05 will update 20 times a second, 0.5, twice a second and 2 once every 2 seconds.
-        */
-        public float updateRate = 0.05f;
-
-        //Backing fields
-        private ProjectionRenderer projection;
-        private bool executing;
-
         private void Awake()
         {
             //Grab our projection
             projection = GetComponent<ProjectionRenderer>();
         }
+
         private void OnEnable()
         {
             //Begin fade if immediate method
             if (method == FadeMethod.OnEnable) InvokeFade();
         }
+
         private void OnDisable()
         {
             EndFade();
@@ -78,6 +87,7 @@ namespace LlockhamIndustries.Decals
         {
             StartCoroutine(FadeRoutine(projection, updateRate));
         }
+
         /**
         * Used to stop a fade mid-way through it's routine.
         */
@@ -91,11 +101,11 @@ namespace LlockhamIndustries.Decals
         {
             //Execution check
             if (executing || fade == null) yield break;
-            else executing = true;
+            executing = true;
 
             //Cache alpha & scale
-            float originalAlpha = GetAlpha(Projection);
-            Vector3 originalScale = Projection.transform.localScale;
+            var originalAlpha = GetAlpha(Projection);
+            var originalScale = Projection.transform.localScale;
 
             //Setup wrap mode
             switch (wrapMode)
@@ -114,7 +124,7 @@ namespace LlockhamIndustries.Decals
 
             //Perform fade
             float timeElapsed = 0;
-            while ((wrapMode != FadeWrapMode.Clamp && wrapMode != FadeWrapMode.Once) || timeElapsed <= fadeLength)
+            while (wrapMode != FadeWrapMode.Clamp && wrapMode != FadeWrapMode.Once || timeElapsed <= fadeLength)
             {
                 ApplyFade(Projection, originalAlpha, originalScale, timeElapsed / fadeLength);
 
@@ -136,7 +146,7 @@ namespace LlockhamIndustries.Decals
         private void ApplyFade(ProjectionRenderer Projection, float OriginalAlpha, Vector3 OriginalScale, float Time)
         {
             //Calculate fade value
-            float fadeValue = fade.Evaluate(Time);
+            var fadeValue = fade.Evaluate(Time);
 
             //Update projection
             switch (type)
@@ -153,6 +163,7 @@ namespace LlockhamIndustries.Decals
                     break;
             }
         }
+
         private float GetAlpha(ProjectionRenderer Projection)
         {
             switch (Projection.Properties[0].type)
@@ -166,6 +177,7 @@ namespace LlockhamIndustries.Decals
             }
             return 1;
         }
+
         private void SetAlpha(ProjectionRenderer Projection, float Alpha)
         {
             switch (Projection.Properties[0].type)
@@ -176,7 +188,7 @@ namespace LlockhamIndustries.Decals
                     break;
 
                 case PropertyType.Color:
-                    Color color = Projection.Properties[0].color;
+                    var color = Projection.Properties[0].color;
                     color.a = Alpha;
                     Projection.SetColor(0, color);
                     break;
@@ -184,13 +196,14 @@ namespace LlockhamIndustries.Decals
 
             Projection.UpdateProperties();
         }
+
         private void SetScale(ProjectionRenderer Projection, Vector3 Scale)
         {
             Projection.transform.localScale = Scale;
         }
     }
 
-    public enum FadeType { Alpha, Scale, Both};
-    public enum FadeMethod { OnEnable, OnInvoke };
-    public enum FadeWrapMode { Once, Clamp, Loop, PingPong };
+    public enum FadeType { Alpha, Scale, Both}
+    public enum FadeMethod { OnEnable, OnInvoke }
+    public enum FadeWrapMode { Once, Clamp, Loop, PingPong }
 }

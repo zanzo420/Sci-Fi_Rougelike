@@ -1,6 +1,9 @@
-﻿using System.Collections;
+﻿#region
+
 using System.Collections.Generic;
 using UnityEngine;
+
+#endregion
 
 namespace LlockhamIndustries.Misc
 {
@@ -8,6 +11,18 @@ namespace LlockhamIndustries.Misc
     {
         //Inspector
         public GameObject laser;
+
+        //Backing fields
+        [SerializeField]
+        private int laserCount = 1;
+
+        private List<GameObject> laserPool;
+
+        //Laser pool
+        private List<GameObject> lasers;
+
+        [SerializeField]
+        private int spawnRate = 5;
 
         //Properties
         public int LaserCount
@@ -20,27 +35,18 @@ namespace LlockhamIndustries.Misc
             }
         }
 
-        //Backing fields
-        [SerializeField]
-        private int laserCount = 1;
-
-        [SerializeField]
-        private int spawnRate = 5;
-
         //Generic methods
-        void Awake()
+        private void Awake()
         {
             lasers = new List<GameObject>();
             laserPool = new List<GameObject>();
         }
-        void Start()
+
+        private void Start()
         {
             LaserCountChange();
         }
 
-        //Laser pool
-        private List<GameObject> lasers;
-        private List<GameObject> laserPool;
         public GameObject RequestLaser()
         {
             GameObject Laser = null;
@@ -59,7 +65,7 @@ namespace LlockhamIndustries.Misc
             else
             {
                 //Create a new laser
-                Laser = (GameObject)Instantiate(laser, Vector3.zero, Quaternion.LookRotation(-Vector3.up, -Vector3.right), transform);
+                Laser = Instantiate(laser, Vector3.zero, Quaternion.LookRotation(-Vector3.up, -Vector3.right), transform);
             }
 
             //Add to active lasers
@@ -67,6 +73,7 @@ namespace LlockhamIndustries.Misc
 
             return Laser;
         }
+
         public void ReturnLaser(GameObject laser)
         {
             //Remove from active lasers
@@ -81,13 +88,13 @@ namespace LlockhamIndustries.Misc
             //Add to pool
             laserPool.Add(laser);
         }
-        
+
         //Laser count
         public void LaserCountChange()
         {
             if (Application.isPlaying)
             {
-                int lasersSpawned = 0;
+                var lasersSpawned = 0;
 
                 //Add as required, limited by spawn rate
                 while (lasers != null && lasers.Count < laserCount && lasersSpawned < spawnRate)
@@ -97,9 +104,7 @@ namespace LlockhamIndustries.Misc
                 }
                 //Remove as required
                 while (lasers != null && lasers.Count > laserCount)
-                {
                     ReturnLaser(lasers[lasers.Count - 1]);
-                }
             }
         }
     }

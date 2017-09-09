@@ -1,6 +1,9 @@
-﻿using System.Collections;
-using System.Collections.Generic;
+﻿#region
+
+using System.Collections;
 using UnityEngine;
+
+#endregion
 
 namespace LlockhamIndustries.Misc
 {
@@ -8,6 +11,9 @@ namespace LlockhamIndustries.Misc
     {
         [Header("General")]
         public bool autoRearm;
+
+        //Backing fields
+        private TrapState state = TrapState.Idle;
 
         //Access
         public TrapState State
@@ -27,6 +33,7 @@ namespace LlockhamIndustries.Misc
                 StartCoroutine("OnTrigger");
             }
         }
+
         public void Rearm()
         {
             //Stop triggering
@@ -40,11 +47,9 @@ namespace LlockhamIndustries.Misc
             }
         }
 
-        //Backing fields
-        private TrapState state = TrapState.Idle;
-
         //Innards
         protected abstract IEnumerator OnTrigger();
+
         protected abstract IEnumerator OnRearm();
 
         protected void TriggerComplete()
@@ -54,6 +59,7 @@ namespace LlockhamIndustries.Misc
 
             if (autoRearm) Rearm();
         }
+
         protected void RearmComplete()
         {
             //No longer rearming
@@ -61,5 +67,5 @@ namespace LlockhamIndustries.Misc
         }
     }
 
-    public enum TrapState { Idle, Triggering, Rearming };
+    public enum TrapState { Idle, Triggering, Rearming }
 }

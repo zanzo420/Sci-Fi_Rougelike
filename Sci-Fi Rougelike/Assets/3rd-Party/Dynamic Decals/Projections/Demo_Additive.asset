@@ -21,13 +21,13 @@ MonoBehaviour:
   offset: {x: 0, y: 0}
   maskMethod: 0
   masks: 00000000
-  projectionLimit: 100
+  projectionLimit: 101
   _Cutoff: 8
-  _TilingOffset: 283
-  _MaskBase: 284
-  _MaskLayers: 285
+  _TilingOffset: 286
+  _MaskBase: 287
+  _MaskLayers: 288
   albedo:
-    texture: {fileID: 2800000, guid: ead84f65253041048861cfbad00e770e, type: 3}
-    color: {r: 0.5588235, g: 0.5588235, b: 0.5588235, a: 1}
-    _MainTex: 5
     _Color: 6
+    _MainTex: 5
+    color: {r: 0.5588235, g: 0.5588235, b: 0.5588235, a: 1}
+    texture: {fileID: 2800000, guid: ead84f65253041048861cfbad00e770e, type: 3}

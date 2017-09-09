@@ -1,6 +1,9 @@
-﻿using System.Collections;
-using System.Collections.Generic;
+﻿#region
+
+using System.Collections;
 using UnityEngine;
+
+#endregion
 
 namespace LlockhamIndustries.Decals
 {
@@ -16,25 +19,29 @@ namespace LlockhamIndustries.Decals
         * How long the projection has to be off screen before it's culled. 0 will cull the projection the second it's no longer visible.
         */
         public float cullTime = 4;
+
+        private bool executing;
+
+        //Backing fields
+        private ProjectionRenderer projection;
+
         /**
         * How often we check if the projection is visible. There's no point checking visibility 60+ times a second. 0.05 will check 20 times a second, 0.5, twice a second and 2 once every 2 seconds. 
         */
         public float updateRate = 0.05f;
-
-        //Backing fields
-        private ProjectionRenderer projection;
-        private bool executing;
 
         private void Awake()
         {
             //Grab our projection
             projection = GetComponent<ProjectionRenderer>();
         }
+
         private void OnEnable()
         {
             //Begin cull
             InvokeCull();
         }
+
         private void OnDisable()
         {
             EndCull();
@@ -44,6 +51,7 @@ namespace LlockhamIndustries.Decals
         {
             StartCoroutine(CullRoutine(projection, updateRate));
         }
+
         public void EndCull()
         {
             //Stop Fade
@@ -54,7 +62,7 @@ namespace LlockhamIndustries.Decals
         {
             //Execution check
             if (executing) yield break;
-            else executing = true;
+            executing = true;
 
             //Perform fade
             float timeElapsed = 0;

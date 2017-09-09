@@ -1,12 +1,13 @@
-﻿using System.Collections;
-using System.Collections.Generic;
+﻿#region
+
 using UnityEngine;
 
+#endregion
+
 public class PhysicsUpdateRate : MonoBehaviour {
+	public int updatesPerSecond = 60;
 
-    public int updatesPerSecond = 60;
-
-	void Start ()
+	private void Start ()
     {
         Time.fixedDeltaTime = 1f / updatesPerSecond;
 	}

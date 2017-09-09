@@ -1,6 +1,9 @@
-﻿using System.Collections;
+﻿#region
+
 using System.Collections.Generic;
 using UnityEngine;
+
+#endregion
 
 namespace LlockhamIndustries.Decals
 {
@@ -11,62 +14,57 @@ namespace LlockhamIndustries.Decals
     [RequireComponent(typeof(ParticleSystem))]
     public class ParticleCollisionPrinter : Printer
     {
-        /**
-        * Defines the orientation of the projection relative to the surface of the collision. Velocity will orient the projection as if its up is the direction the collision object is moving in. Random will orient the projection as if its up is random.
-        */
-        public RotationSource rotationSource;
+        private List<ParticleCollisionEvent> collisionEvents;
+        private float maxparticleCollisionSize;
+
+        private ParticleSystem partSystem;
 
         /**
         * Defines the percentage of particles that print projections. At 0, no particles will print, at 1, all will.
         */
         public float ratio = 1;
 
-        private ParticleSystem partSystem;
-        private float maxparticleCollisionSize;
-        private List<ParticleCollisionEvent> collisionEvents;
+        /**
+        * Defines the orientation of the projection relative to the surface of the collision. Velocity will orient the projection as if its up is the direction the collision object is moving in. Random will orient the projection as if its up is random.
+        */
+        public RotationSource rotationSource;
 
-        void Start()
+        private void Start()
         {
             //Grab Particle System
             partSystem = GetComponent<ParticleSystem>();
 
             if (Application.isPlaying)
-            {
-                //Initialize collision list
                 collisionEvents = new List<ParticleCollisionEvent>();
-            }
         }
-        void Update()
+
+        private void Update()
         {
             // Log Setup Warnings
             if (partSystem.collision.enabled != true)
-            {
                 Debug.LogWarning("Particle system collisions must be enabled for the particle system to print decals");
-            }
             else if (partSystem.collision.sendCollisionMessages != true)
-            {
                 Debug.LogWarning("Particle system must send collision messages for the particle system to print decals. This option can be enabled under the collisions menu.");
-            }
         }
 
-        void OnParticleCollision(GameObject other)
+        private void OnParticleCollision(GameObject other)
         {
             if (Application.isPlaying && ratio > 0)
             {
-                int numCollisionEvents = partSystem.GetCollisionEvents(other, collisionEvents);
+                var numCollisionEvents = partSystem.GetCollisionEvents(other, collisionEvents);
 
-                int i = 0;
+                var i = 0;
                 while (i < numCollisionEvents)
                 {
                     if (ratio == 1 || ratio > Random.Range(0f, 1f))
                     {
                         //Grab collision data
-                        Vector3 position = collisionEvents[i].intersection;
-                        Vector3 normal = collisionEvents[i].normal;
-                        Transform surface = other.transform;
+                        var position = collisionEvents[i].intersection;
+                        var normal = collisionEvents[i].normal;
+                        var surface = other.transform;
 
                         //Create layermask
-                        int layerMask = 1 << other.layer;
+                        var layerMask = 1 << other.layer;
 
                         //Calculate final position and surface normal
                         RaycastHit hit;

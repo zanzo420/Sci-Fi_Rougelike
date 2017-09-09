@@ -1,19 +1,19 @@
-﻿//Copyright © Darwin Willers 2017
+﻿#region
 
 using System;
 using System.Collections;
 using UnityEngine;
 
+#endregion
 
 public class UnitMover : MonoBehaviour
 {
-    public Action taskDone;
-                        
     public float moveTime = 1f;
+    public Action taskDone;
 
     public bool IsMoving { get; private set; }
 
-    
+
     public void MoveUnit(Vector3 destination)
     {
         if (CheckIsMoving() || !CanMoveToDestination(destination)) return;
@@ -27,7 +27,7 @@ public class UnitMover : MonoBehaviour
         
         Debug.LogError("UnitMover of: " + name + " recieved staggerd MoveUnit calls");
         return true;
-    }   
+    }
 
     private IEnumerator MoveToDestination(Vector3 destination, float time)
     {
@@ -65,7 +65,4 @@ public class UnitMover : MonoBehaviour
                        + tile.name + " at " + tile.Position);
         return false;
     }
-
-    
-    
 }

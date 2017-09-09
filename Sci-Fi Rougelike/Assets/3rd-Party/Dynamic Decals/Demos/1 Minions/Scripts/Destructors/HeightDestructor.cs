@@ -1,5 +1,8 @@
-﻿using UnityEngine;
-using System.Collections;
+﻿#region
+
+using UnityEngine;
+
+#endregion
 
 namespace LlockhamIndustries.Misc
 {
@@ -7,12 +10,10 @@ namespace LlockhamIndustries.Misc
     {
         public float height = -10;
 
-        void Update()
+        private void Update()
         {
             if (transform.position.y < height)
-            {
                 Destroy(gameObject);
-            }
         }
     }
 }

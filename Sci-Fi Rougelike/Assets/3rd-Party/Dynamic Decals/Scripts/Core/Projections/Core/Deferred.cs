@@ -1,13 +1,16 @@
-﻿using System.Collections;
-using System.Collections.Generic;
+﻿#region
+
+using System;
 using UnityEngine;
+
+#endregion
 
 namespace LlockhamIndustries.Decals
 {
     /**
     * The base of all deferred only projections (Gloss, Normal)
     */
-    [System.Serializable]
+    [Serializable]
     public abstract class Deferred : Projection
     {
         //Deferred only

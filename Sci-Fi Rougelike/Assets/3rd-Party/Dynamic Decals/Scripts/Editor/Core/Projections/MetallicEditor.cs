@@ -1,6 +1,9 @@
-﻿using UnityEngine;
+﻿#region
+
 using UnityEditor;
-using System.Collections;
+using UnityEngine;
+
+#endregion
 
 namespace LlockhamIndustries.Decals
 {
@@ -9,15 +12,16 @@ namespace LlockhamIndustries.Decals
     {
         //Property groups
         protected SerializedProperty albedo;
-        protected SerializedProperty metallic;
-        protected SerializedProperty normal;
-        protected SerializedProperty emissive;
 
         //Property group drawers
         protected AlbedoTextureDrawer albedoDrawer;
-        protected MetallicTextureDrawer metallicDrawer;
-        protected NormalTextureDrawer normalDrawer;
+
+        protected SerializedProperty emissive;
         protected EmissiveTextureDrawer emissiveDrawer;
+        protected SerializedProperty metallic;
+        protected MetallicTextureDrawer metallicDrawer;
+        protected SerializedProperty normal;
+        protected NormalTextureDrawer normalDrawer;
 
         public override void OnEnable()
         {
@@ -39,9 +43,10 @@ namespace LlockhamIndustries.Decals
                 if (propertyGroups[3] == null) propertyGroups[3] = new EmissiveTextureDrawer(new GUIContent("Emissive"), emissive, this);
 
                 //Initialize property groups
-                if (propertyGroups != null) for (int i = 0; i < propertyGroups.Length; i++) propertyGroups[i].Initialize();
+                if (propertyGroups != null) for (var i = 0; i < propertyGroups.Length; i++) propertyGroups[i].Initialize();
             }
         }
+
         public override void OnDisable()
         {
             base.OnDisable();
@@ -58,9 +63,7 @@ namespace LlockhamIndustries.Decals
 
             //Draw property groups
             if (propertyGroups != null)
-            {
-                for (int i = 0; i < propertyGroups.Length; i++) propertyGroups[i].OnGUILayout();
-            }
+                for (var i = 0; i < propertyGroups.Length; i++) propertyGroups[i].OnGUILayout();
 
             //Masking();
             ProjectionLimit();

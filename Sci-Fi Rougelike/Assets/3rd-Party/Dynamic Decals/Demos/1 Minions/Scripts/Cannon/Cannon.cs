@@ -1,6 +1,9 @@
-﻿using System.Collections;
-using System.Collections.Generic;
+﻿#region
+
+using System.Collections;
 using UnityEngine;
+
+#endregion
 
 namespace LlockhamIndustries.Misc
 {
@@ -8,21 +11,24 @@ namespace LlockhamIndustries.Misc
     {
         [Header("References")]
         public GameObject ball;
+
         public Rigidbody barrel;
-        public ParticleSystem particles;
+        public float fireRate = 0.25f;
 
         [Header("Firing")]
         public Vector3 offset;
-        public Vector3 velocity = new Vector3(0, -10, 0);
-        public float fireRate = 0.25f;
-        
+
+        public ParticleSystem particles;
+
         private float timeElapsed;
+        public Vector3 velocity = new Vector3(0, -10, 0);
 
         private void OnEnable()
         {
             //Start fire routine
             StartCoroutine(FireRoutine());
         }
+
         private void OnDisable()
         {
             StopAllCoroutines();
@@ -47,6 +53,7 @@ namespace LlockhamIndustries.Misc
                 yield return new WaitForFixedUpdate();
             }
         }
+
         private void Fire()
         {
             //Play particle effect
@@ -55,17 +62,17 @@ namespace LlockhamIndustries.Misc
             if (barrel != null && ball != null)
             {
                 //Instantiate cannonball
-                GameObject cannonBall = Instantiate(ball, barrel.transform.position + barrel.transform.rotation * offset, Quaternion.identity, transform);
-                Rigidbody crb = cannonBall.GetComponent<Rigidbody>();
+                var cannonBall = Instantiate(ball, barrel.transform.position + barrel.transform.rotation * offset, Quaternion.identity, transform);
+                var crb = cannonBall.GetComponent<Rigidbody>();
 
                 //Calculate velocity
-                Vector3 ballVelocity = barrel.transform.rotation * velocity;
+                var ballVelocity = barrel.transform.rotation * velocity;
 
                 //Give cannonball velocity
                 crb.velocity = ballVelocity;
 
                 //Calculare barrel velocity
-                Vector3 barrelVelocity = -ballVelocity * (crb.mass / barrel.mass);
+                var barrelVelocity = -ballVelocity * (crb.mass / barrel.mass);
 
                 //Apply equal force against barrel
                 barrel.velocity = barrelVelocity;
@@ -76,8 +83,8 @@ namespace LlockhamIndustries.Misc
         {
             if (barrel != null)
             {
-                Vector3 position = barrel.transform.position + barrel.transform.rotation * offset;
-                Vector3 direction = barrel.transform.rotation * velocity;
+                var position = barrel.transform.position + barrel.transform.rotation * offset;
+                var direction = barrel.transform.rotation * velocity;
 
                 Gizmos.DrawWireSphere(position, 0.2f);
                 Gizmos.DrawRay(position, direction);

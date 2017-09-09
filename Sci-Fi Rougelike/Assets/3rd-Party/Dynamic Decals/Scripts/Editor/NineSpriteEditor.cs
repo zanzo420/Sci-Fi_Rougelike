@@ -1,7 +1,8 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
+﻿#region
+
 using UnityEditor;
+
+#endregion
 
 namespace LlockhamIndustries.Decals
 {
@@ -9,11 +10,11 @@ namespace LlockhamIndustries.Decals
     [CustomEditor(typeof(NineSprite))]
     public class NineSpriteEditor : Editor
     {
-        SerializedProperty sprite;
-        SerializedProperty borderPixelSize;
-        SerializedProperty borderWorldSize;
+        private SerializedProperty borderPixelSize;
+        private SerializedProperty borderWorldSize;
+        private SerializedProperty sprite;
 
-        void OnEnable()
+        private void OnEnable()
         {
             sprite = serializedObject.FindProperty("sprite");
             borderPixelSize = serializedObject.FindProperty("borderPixelSize");
@@ -36,10 +37,8 @@ namespace LlockhamIndustries.Decals
             serializedObject.ApplyModifiedProperties();
 
             //Update
-            for (int i = 0; i < serializedObject.targetObjects.Length; i++)
-            {
+            for (var i = 0; i < serializedObject.targetObjects.Length; i++)
                 ((NineSprite)serializedObject.targetObjects[i]).UpdateNineSprite();
-            }
         }
     }
 }

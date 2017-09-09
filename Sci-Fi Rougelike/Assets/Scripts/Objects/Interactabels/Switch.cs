@@ -1,26 +1,23 @@
-﻿//Copyright © Darwin Willers 2017
+﻿#region
 
 using System;
 using UnityEngine;
 
+#endregion
+
 public class Switch : Interactabel
 {
-
     private bool _status;
 
-    public Action<bool> SwitchActivated;
-    
+    public Action<bool> switchActivated;
+
     public override void Interact(Transform other)
     {
         Debug.Log(other.name + " interacted with " + name);
         
         _status = !_status;
 
-        if (SwitchActivated != null)
-            SwitchActivated(_status);
+        if (switchActivated != null)
+            switchActivated(_status);
     }
-    
-    
-
-
 }

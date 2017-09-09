@@ -1,18 +1,19 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
+﻿#region
+
 using UnityEditor;
+
+#endregion
 
 namespace LlockhamIndustries.Misc
 {
     [CustomEditor(typeof(LaserSpawner))]
     public class DemoLSEditor : Editor
     {
-        SerializedProperty laser;
-        SerializedProperty laserCount;
-        SerializedProperty spawnRate;
+        private SerializedProperty laser;
+        private SerializedProperty laserCount;
+        private SerializedProperty spawnRate;
 
-        void OnEnable()
+        private void OnEnable()
         {
             laser = serializedObject.FindProperty("laser");
             laserCount = serializedObject.FindProperty("laserCount");

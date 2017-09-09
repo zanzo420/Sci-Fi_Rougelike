@@ -1,11 +1,11 @@
-﻿using UnityEngine;
-using UnityEditor;
+﻿#region
 
 using System;
 using System.Text;
-using System.Collections;
-using System.Collections.Generic;
-using System.Linq;
+using UnityEditor;
+using UnityEngine;
+
+#endregion
 
 namespace LlockhamIndustries
 {
@@ -13,30 +13,44 @@ namespace LlockhamIndustries
     {
         //Global Editor Properties
         public static int TexturePreviewSize = 52;
+
         public static int GradientPreviewSize = 104;
         public static float TabHeight = 20;
         public static float Spacing = 6;
+        private static GUIStyle tabLabel;
+        private static GUIStyle miniTabLabel;
+        private static GUIStyle miniLabel;
+        private static GUIStyle foldout;
+        private static Texture2D rightArrow;
+        private static Texture2D downArrow;
+        private static Texture2D up;
+        private static Texture2D down;
+        private static Texture2D cross;
+        private static Texture2D reset;
 
         public static Color BackgroundColor
         {
-            get { return (EditorGUIUtility.isProSkin) ? new Color(0.15f, 0.15f, 0.15f, 1) : new Color(0.60f, 0.60f, 0.60f, 1); }
+            get { return EditorGUIUtility.isProSkin ? new Color(0.15f, 0.15f, 0.15f, 1) : new Color(0.60f, 0.60f, 0.60f, 1); }
         }
+
         public static Color MidgroundColor
         {
-            get { return (EditorGUIUtility.isProSkin) ? new Color(0.18f, 0.18f, 0.18f, 1) : new Color(0.68f, 0.68f, 0.68f, 1); }
+            get { return EditorGUIUtility.isProSkin ? new Color(0.18f, 0.18f, 0.18f, 1) : new Color(0.68f, 0.68f, 0.68f, 1); }
         }
+
         public static Color ForegroundColor
         {
-            get { return (EditorGUIUtility.isProSkin) ? new Color(0.22f, 0.22f, 0.22f, 1) : new Color(0.78f, 0.78f, 0.78f, 1); }
+            get { return EditorGUIUtility.isProSkin ? new Color(0.22f, 0.22f, 0.22f, 1) : new Color(0.78f, 0.78f, 0.78f, 1); }
         }
+
         public static Color HeaderColor
         {
-            get { return (EditorGUIUtility.isProSkin) ? new Color(0.28f, 0.28f, 0.28f, 1) : new Color(0.82f, 0.82f, 0.82f, 1); }
+            get { return EditorGUIUtility.isProSkin ? new Color(0.28f, 0.28f, 0.28f, 1) : new Color(0.82f, 0.82f, 0.82f, 1); }
         }
 
         public static Color TextColor
         {
-            get { return (EditorGUIUtility.isProSkin) ? new Color(0.6f, 0.6f, 0.6f, 1) : new Color(0.2f, 0.2f, 0.2f, 1); }
+            get { return EditorGUIUtility.isProSkin ? new Color(0.6f, 0.6f, 0.6f, 1) : new Color(0.2f, 0.2f, 0.2f, 1); }
         }
 
         //Global Editor Styles
@@ -52,7 +66,6 @@ namespace LlockhamIndustries
                 return tabLabel;
             }
         }
-        private static GUIStyle tabLabel;
 
         public static GUIStyle MiniTabLabel
         {
@@ -66,7 +79,6 @@ namespace LlockhamIndustries
                 return miniTabLabel;
             }
         }
-        private static GUIStyle miniTabLabel;
 
         public static GUIStyle MiniLabel
         {
@@ -80,7 +92,6 @@ namespace LlockhamIndustries
                 return miniLabel;
             }
         }
-        private static GUIStyle miniLabel;
 
         public static GUIStyle BoldFoldout
         {
@@ -92,7 +103,6 @@ namespace LlockhamIndustries
                 return foldout;
             }
         }
-        private static GUIStyle foldout;
 
         //Global Editor Resources
         public static Texture2D RightArrow
@@ -100,96 +110,76 @@ namespace LlockhamIndustries
             get
             {
                 if (rightArrow == null)
-                {
                     rightArrow = Resources.Load("Editor_RightArrow") as Texture2D;
-                }
                 return rightArrow;
             }
         }
-        private static Texture2D rightArrow;
 
         public static Texture2D DownArrow
         {
             get
             {
                 if (downArrow == null)
-                {
                     downArrow = Resources.Load("Editor_DownArrow") as Texture2D;
-                }
                 return downArrow;
             }
         }
-        private static Texture2D downArrow;
 
         public static Texture2D Up
         {
             get
             {
                 if (up == null)
-                {
                     up = Resources.Load("Editor_Up") as Texture2D;
-                }
                 return rightArrow;
             }
         }
-        private static Texture2D up;
 
         public static Texture2D Down
         {
             get
             {
                 if (down == null)
-                {
                     down = Resources.Load("Editor_Down") as Texture2D;
-                }
                 return down;
             }
         }
-        private static Texture2D down;
 
         public static Texture2D Cross
         {
             get
             {
                 if (cross == null)
-                {
                     cross = Resources.Load("Editor_Cross") as Texture2D;
-                }
                 return cross;
             }
         }
-        private static Texture2D cross;
 
         public static Texture2D Reset
         {
             get
             {
                 if (reset == null)
-                {
                     reset = Resources.Load("Editor_Reset") as Texture2D;
-                }
                 return reset;
             }
         }
-        private static Texture2D reset;
 
         //Texture Extension Methods
         public static Texture2D TextureFromColor(Color Color)
         {
-            Texture2D Texture = new Texture2D(1, 1);
+            var Texture = new Texture2D(1, 1);
             Texture.SetPixel(0, 0, Color);
             Texture.Apply();
 
             return Texture;
         }
+
         public static Texture2D TextureFromProperty(SerializedProperty Property)
         {
             Texture2D texture = null;
             if (Property.objectReferenceValue != null)
-            {
-                //Brute force
                 while (texture == null) texture = AssetPreview.GetAssetPreview(Property.objectReferenceValue);
-            }
             return texture;
         }
 
@@ -198,13 +188,14 @@ namespace LlockhamIndustries
         {
             return source.IndexOf(toCheck, StringComparison.OrdinalIgnoreCase) >= 0;
         }
+
         public static string AddSpacesToType(string text)
         {
             if (string.IsNullOrEmpty(text)) return "";
 
-            StringBuilder newText = new StringBuilder(text.Length * 2);
+            var newText = new StringBuilder(text.Length * 2);
             newText.Append(text[0]);
-            for (int i = 1; i < text.Length; i++)
+            for (var i = 1; i < text.Length; i++)
             {
                 if (char.IsUpper(text[i]) && text[i - 1] != ' ' && text[i - 1] != '/') newText.Append(' ');
                 newText.Append(text[i]);

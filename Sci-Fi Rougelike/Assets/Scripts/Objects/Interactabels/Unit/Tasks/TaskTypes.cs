@@ -1,7 +1,9 @@
-﻿//Copyright © Darwin Willers 2017
+﻿#region
 
 using System;
 using UnityEngine;
+
+#endregion
 
 [Serializable]
 public enum TaskType

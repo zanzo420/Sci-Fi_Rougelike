@@ -1,21 +1,18 @@
-﻿//Copyright © Darwin Willers 2017
+﻿#region
 
 using System;
-using Debug = UnityEngine.Debug;
+using UnityEngine;
+
+#endregion
 
 public class WayPoint : IComparable
 {
-
-    public GroundTile tile;
     public WayPoint formerWayPoint;
-    public int wayCost;
     public int gapSize;
 
-    public int potential
-    {
-        get { return wayCost + gapSize; }
-    }
-    
+    public GroundTile tile;
+    public int wayCost;
+
     public WayPoint(GroundTile tile, int wayCost, int gapSize)
     {
         
@@ -24,7 +21,7 @@ public class WayPoint : IComparable
         this.wayCost = wayCost;
         this.gapSize= gapSize;
     }
-    
+
     public WayPoint(GroundTile tile, WayPoint formerWayPoint, int wayCost, int gapSize)
     {
         
@@ -34,6 +31,11 @@ public class WayPoint : IComparable
         this.gapSize= gapSize;
     }
 
+    public int Potential
+    {
+        get { return wayCost + gapSize; }
+    }
+
     public int CompareTo(object obj)
     {
         if (obj == null) return 1;
@@ -41,12 +43,10 @@ public class WayPoint : IComparable
         var other = obj as WayPoint;
 
         if (other != null)
-            return potential.CompareTo(other.potential);
+            return Potential.CompareTo(other.Potential);
 
         Debug.LogError("Cant compare a WayPoint to a non WayPoint");
         return 0;
 
     }
-
-
 }
