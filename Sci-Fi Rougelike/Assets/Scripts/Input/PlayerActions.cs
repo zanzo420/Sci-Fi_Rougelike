@@ -29,6 +29,5 @@ public class PlayerActions : MonoBehaviour
             Debug.Log("PLAYERACTIONS - MoveToTileByClick - No Tile was found");
         else
             _player.InteractWith(tile);
-
     }
 }
