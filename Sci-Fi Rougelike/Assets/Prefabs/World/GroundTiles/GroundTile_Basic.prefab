@@ -23,6 +23,7 @@ GameObject:
   - component: {fileID: 23183040581519288}
   - component: {fileID: 64817630268990568}
   - component: {fileID: 114801615399030056}
+  - component: {fileID: 65067820836765102}
   m_Layer: 0
   m_Name: GroundTile_Basic
   m_TagString: GroundTile
@@ -36,7 +37,7 @@ Transform:
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 1590747604678196}
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
@@ -96,6 +97,18 @@ MeshCollider:
   m_InflateMesh: 0
   m_SkinWidth: 0.01
   m_Mesh: {fileID: 4300000, guid: 52193187cc0f48848a06b78b24833457, type: 3}
+--- !u!65 &65067820836765102
+BoxCollider:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1590747604678196}
+  m_Material: {fileID: 0}
+  m_IsTrigger: 1
+  m_Enabled: 1
+  serializedVersion: 2
+  m_Size: {x: 1, y: 0.8, z: 1}
+  m_Center: {x: 0, y: 0.5, z: 0}
 --- !u!114 &114801615399030056
 MonoBehaviour:
   m_ObjectHideFlags: 1

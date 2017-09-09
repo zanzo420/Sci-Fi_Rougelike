@@ -49,6 +49,31 @@ public class GroundTile : MonoBehaviour
         }
     }
 
+    private void OnTriggerEnter(Collider other)
+    {
+        Debug.Log("Trigger entered");
+        if (HostingObject != null)
+            Debug.LogError("COULDNT ENTER TILE: " + other.name + " couldnt enter tile " +
+                           name + " at " + transform.position + "cause tile already hosting "
+                           + HostingObject.name);
+        else
+        {
+            HostingObject = other.transform;
+            Walkable = false;
+        }
+    }
 
-
+    private void OnTriggerExit(Collider other)
+    {
+        Debug.Log("Trigger exit");
+        if (other.transform != HostingObject)
+            Debug.LogError("COULDNT LEAVE TILE: Object " + other.name +
+                           " is not the hosted Object at tile" + name + " at "
+                           + transform.position + ". Hosted object is " + HostingObject.name);
+        else
+        {
+            HostingObject = null;
+            Walkable = true;
+        }
+    }
 }

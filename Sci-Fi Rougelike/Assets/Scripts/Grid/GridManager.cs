@@ -2,7 +2,7 @@
 
 using UnityEngine;
 using System.Collections.Generic;
-
+using System.Linq;
 
 public class GridManager : MonoBehaviour
 {
@@ -48,8 +48,117 @@ public class GridManager : MonoBehaviour
 
         return tile != null;
     }
-    
-    
+
+    public bool FindPath(Vector3 start, Vector3 end, int maxStamina, out Stack<GroundTile> tiles)
+    {
+        tiles = new Stack<GroundTile>();
+
+        if (!_grid.ContainsKey(end))
+        {
+            Debug.LogError("Pathfinding could find destination");
+            return false;
+        }
+
+        List<WayPoint> openList = new List<WayPoint>();
+        Dictionary<Vector3, int> closedList = new Dictionary<Vector3, int>();
+
+        var startGap = GetGap(start, end);
+        if (startGap > maxStamina)
+        {
+            Debug.Log("Destination to far away");
+            return false;
+        }
+
+        if (!_grid.ContainsKey(start))
+        {
+           Debug.LogError("PATHFINDIG: Start Position was not found");
+            return false;
+        }
+        openList.Add(new WayPoint(_grid[start], 0, startGap));
+
+        WayPoint current = null;
+
+        while (openList.Count != 0)
+        {
+            current = openList.First();
+
+            if (current.tile.Position == end) break;
+            
+            
+
+            #region AddNeighbourTiles
+
+            if (current.wayCost < maxStamina)
+            {
+                for (var x = -1; x <= 1; x++)
+                {
+                    for (var z = -1; z <= 1; z++)
+                    {
+                        if ((x != 0 || z == 0) && (z != 0 || x == 0)) continue;
+                        var newPos = current.tile.Position + new Vector3(x, 0, z);
+                        if (!_grid.ContainsKey(newPos)) continue;
+                        if (!_grid[newPos].Walkable) continue;
+                        var wp = new WayPoint(_grid[newPos], current,
+                            current.wayCost + 1, GetGap(newPos, end));
+                        if (!closedList.ContainsKey(wp.tile.Position))
+                            openList.Add(wp);
+                        else if (closedList[wp.tile.Position] > wp.potential)
+                            openList.Add(wp);
+                    }
+                }
+            }
+
+            #endregion
+
+            if(!openList.Remove(current))
+                Debug.LogError("PATHFINDING: Couldnt remove current tile from openList");
+            
+            if(!closedList.ContainsKey(current.tile.Position))
+            closedList.Add(current.tile.Position, current.potential);
+            else if (closedList[current.tile.Position] > current.potential)
+            {
+                closedList.Remove(current.tile.Position);
+                closedList.Add(current.tile.Position, current.potential);                
+            }
+            
+            openList.Sort();
+
+        }
+
+        if (current == null)
+        {
+            Debug.LogError("PATHFINDING: Current tile was NULL");
+            return false;
+        }
+
+        if (current.tile.Position != end)
+        {
+            Debug.Log("Couldnt reach tile");
+            return false;
+        }
+
+        if (current.wayCost > maxStamina)
+        {
+            Debug.LogError("Found a PAth but cost to much Stamina");
+            return false;
+        }
+
+        while (current.formerWayPoint != null)
+        {
+            tiles.Push(current.tile);
+            current = current.formerWayPoint;
+        } 
+
+        return true;
 
 
-}
+
+
+    }
+
+    private static int GetGap(Vector3 a, Vector3 b)
+        {
+            var gap = b - a;
+            return (int) (Mathf.Abs(gap.x) + Mathf.Abs(gap.z));
+        }
+    }

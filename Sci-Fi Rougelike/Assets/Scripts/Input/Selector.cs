@@ -2,7 +2,7 @@
 
 using UnityEngine;
 
-public class Selector
+public static class Selector
 {
 
     private const float MaxRange = 1000f;

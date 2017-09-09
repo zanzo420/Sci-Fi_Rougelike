@@ -6,10 +6,12 @@ public class PlayerActions : MonoBehaviour
 {
 
     private Camera _cam;
+    private Player _player;
 
     private void Start()
     {
         _cam = Camera.main;
+        _player = GameObject.FindGameObjectWithTag("Player").GetComponent<Player>();
     }
 
     private void Update()
@@ -26,7 +28,7 @@ public class PlayerActions : MonoBehaviour
         if (!Selector.SelectTileByRay(pos, out tile))
             Debug.Log("PLAYERACTIONS - MoveToTileByClick - No Tile was found");
         else
-            Player.PlayerInteractWith(tile);
+            _player.InteractWith(tile);
 
     }
 }
