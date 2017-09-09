@@ -9,7 +9,7 @@ using UnityEngine;
 public class UnitRotater : MonoBehaviour
 {
 
-    public Action TaskDone;
+    public Action taskDone;
     
     public float rotationTime = .5f;
     public bool IsRotating { get; private set; }
@@ -32,14 +32,20 @@ public class UnitRotater : MonoBehaviour
         var endRotation = unit.rotation;
         unit.rotation = startRotation;
 
-        while (timePassed < rotationTime)
+        if (startRotation != endRotation)
         {
-            timePassed += Time.deltaTime;
-            Quaternion.Lerp(startRotation, endRotation, timePassed / time);
-            yield return null;
+            while (timePassed < rotationTime)
+            {
+                timePassed += Time.deltaTime;
+                unit.rotation = Quaternion.Lerp(startRotation, endRotation, timePassed / time);
+                yield return null;
+            }
+            
+            unit.rotation = endRotation;
         }
+
         IsRotating = false;
-        if (TaskDone != null) TaskDone();
+        if (taskDone != null) taskDone();
     }
     
     private bool CheckIsRotating()

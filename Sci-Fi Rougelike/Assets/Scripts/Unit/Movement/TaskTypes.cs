@@ -13,12 +13,12 @@ public enum TaskType
 
 public struct Task
 {
-    public TaskType Type;
-    public Vector3 Position;
+    public TaskType type;
+    public Vector3 position;
 
     public Task(TaskType type, Vector3 pos)
     {
-        Type = type;
-        Position = pos;
+        this.type = type;
+        position = pos;
     }
 }
