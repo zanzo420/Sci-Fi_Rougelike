@@ -48,13 +48,22 @@ public class Unit : MonoBehaviour
             var interactabel = tile.HostingObject.GetComponent<Interactabel>();
             if (interactabel != null)
             {
-                if (GetGap(transform.position, tile.Position) > 1)
-                    Debug.Log("Interactabel to far away");
-                else
+                Stack<GroundTile> tiles;
+                
+                if (!GridManager.Instance.FindPath(transform.position, tile.Position, Stamina,
+                    out tiles)) return;
+
+                UseStamina(tiles.Count);
+
+                while (tiles.Count > 1)
                 {
-                    _taskControler.AddTask(TaskType.LookAt, tile.Position);
-                    _taskControler.AddTask(TaskType.Interact, tile.Position);
+                    _taskControler.AddTask(tiles.Pop().Position);
                 }
+
+                var lastTilePos = tiles.Pop().Position;
+                    _taskControler.AddTask(TaskType.LookAt, lastTilePos);
+                    _taskControler.AddTask(TaskType.Interact, lastTilePos);
+                
 
             }
         }

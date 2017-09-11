@@ -11,7 +11,7 @@ public class WayPoint : IComparable
     public int wayCost;
     public int gapSize;
 
-    public int potential
+    public int Potential
     {
         get { return wayCost + gapSize; }
     }
@@ -41,7 +41,7 @@ public class WayPoint : IComparable
         var other = obj as WayPoint;
 
         if (other != null)
-            return potential.CompareTo(other.potential);
+            return Potential.CompareTo(other.Potential);
 
         Debug.LogError("Cant compare a WayPoint to a non WayPoint");
         return 0;

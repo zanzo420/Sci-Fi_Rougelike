@@ -59,8 +59,8 @@ public class GridManager : MonoBehaviour
             return false;
         }
 
-        List<WayPoint> openList = new List<WayPoint>();
-        Dictionary<Vector3, int> closedList = new Dictionary<Vector3, int>();
+        var openList = new List<WayPoint>();
+        var closedList = new Dictionary<Vector3, int>();
 
         var startGap = GetGap(start, end);
         if (startGap > maxStamina)
@@ -97,12 +97,12 @@ public class GridManager : MonoBehaviour
                         if ((x != 0 || z == 0) && (z != 0 || x == 0)) continue;
                         var newPos = current.tile.Position + new Vector3(x, 0, z);
                         if (!_grid.ContainsKey(newPos)) continue;
-                        if (!_grid[newPos].Walkable) continue;
+                        if (!_grid[newPos].Walkable && newPos != end) continue;
                         var wp = new WayPoint(_grid[newPos], current,
                             current.wayCost + 1, GetGap(newPos, end));
                         if (!closedList.ContainsKey(wp.tile.Position))
                             openList.Add(wp);
-                        else if (closedList[wp.tile.Position] > wp.potential)
+                        else if (closedList[wp.tile.Position] > wp.Potential)
                             openList.Add(wp);
                     }
                 }
@@ -114,11 +114,11 @@ public class GridManager : MonoBehaviour
                 Debug.LogError("PATHFINDING: Couldnt remove current tile from openList");
             
             if(!closedList.ContainsKey(current.tile.Position))
-            closedList.Add(current.tile.Position, current.potential);
-            else if (closedList[current.tile.Position] > current.potential)
+            closedList.Add(current.tile.Position, current.Potential);
+            else if (closedList[current.tile.Position] > current.Potential)
             {
                 closedList.Remove(current.tile.Position);
-                closedList.Add(current.tile.Position, current.potential);                
+                closedList.Add(current.tile.Position, current.Potential);                
             }
             
             openList.Sort();

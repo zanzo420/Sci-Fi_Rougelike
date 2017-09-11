@@ -20,6 +20,12 @@ public class PlayerActions : MonoBehaviour
         {
             MoveToTileByClick(Input.mousePosition);
         }
+        
+        if(Input.GetKeyDown(KeyCode.DownArrow))
+            OutdoorCamera.Instance.Zoom(1);
+        
+        if(Input.GetKeyDown(KeyCode.UpArrow))
+            OutdoorCamera.Instance.Zoom(-1);
     }
 
     public void MoveToTileByClick(Vector3 pos)
